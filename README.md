@@ -11,11 +11,11 @@ For Assignments 1-2, it is essential that you have completed the two set of set 
 1. [SETUP0_ROSWorkspace.md](SETUP0_ROSWorkspace.md) 
 2. [SETUP1_GitAssignmentRepo.md](SETUP1_GitAssignmentRepo.md)
 
-The first set of instructions will help you create your [ROS 2 workspace](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Creating-Your-First-ROS2-Package.html) in Ubuntu 24.04 and will explain how ROS 2 packages are organized in general. Additionally, you will be able to test out Shutter's simulation right away! The second set of instructions explain how to setup a GitHub repository and the general procedure that should be followed by students when working on course assignments. Follow these instructions carefully before beginning the first assignment. 
+The first set of instructions will help you create your [ROS 2 workspace](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Creating-A-Workspace/Creating-A-Workspace.html) in Ubuntu 24.04 and will explain how ROS 2 packages are organized in general. Additionally, you will be able to test out Shutter's simulation right away! The second set of instructions explain how to setup a GitHub repository and the general procedure that should be followed by students when working on course assignments. Follow these instructions carefully before beginning the first assignment. 
 
 ## Background Knowledge
 
-If you do not have much experience working with a Linux shell, please read this [introduction to bash](http://cs.lmu.edu/~ray/notes/bash/) by R. Toal and [What Is The Bashrc File Used For?](https://www.lifewire.com/bashrc-file-4101947) by G. Newell. At the bare minimum, you should be familiar with the commands cd, ls, rm, mkdir, echo, nano before starting any of the assignments.
+If you do not have much experience working with a Linux shell, please read this [introduction to bash](http://cs.lmu.edu/~ray/notes/bash/) by R. Toal and this tutorial about [What Is .bashrc in Linux?](https://www.digitalocean.com/community/tutorials/bashrc-file-in-linux). At the bare minimum, you should be familiar with the commands cd, ls, rm, mkdir, echo, nano before starting any of the assignments.
 
 ## Where to find more information about ROS 2?
 
