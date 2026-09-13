@@ -8,27 +8,16 @@
 
 ## Part 0 - Install dependencies
 
-You should have access to a computer with `Ubuntu 24.04` and `ROS 2 Jazzy` to complete the assignments in this repository. The instructions below assume that you are using a [bash shell](https://www.gnu.org/software/bash/) to do the assignments, and that you have installed the *desktop-full* Jazzy version of ROS 2 
-using `apt-get` as in this guide: 
-[https://docs.ros.org/en/jazzy/Installation.html](https://docs.ros.org/en/jazzy/Installation.html).
+You should have access to a computer with `Ubuntu 24.04` and `ROS 2 Jazzy` to complete the assignments in this repository. The instructions below assume that you are using a [bash shell](https://www.gnu.org/software/bash/) to do the assignments.
 
-   > Note that all the dependencies that require sudo (admin permissions) are already installed in the Zoo machines and in the BIM laptops that registered students have access to for the course. Thus, you can skip the next apt install instructions and only run the pip commands that follow.
+   > Note that all the apt dependencies that require sudo (admin permissions) below are already installed in the Zoo machines and in the BIM laptops that registered students have access to for the course. Thus, you can skip the next apt install step and only run the pip commands that follow.
 
 With ROS2 installed, in a terminal, run the following commands to install general system dependencies for Shutter's code:
 
 ```
-$ sudo apt install ros-jazzy-turtle-tf2-py
-$ sudo apt install ros-jazzy-cv-bridge
-$ sudo apt install python3-vcstool
-$ sudo apt install python-is-python3
-$ sudo apt install python3-tk
-$ sudo apt install python3-pip
-$ sudo apt-get install python3-rosdep python3-colcon-common-extensions python3-rosinstall-generator build-essential
-$ sudo -H apt-get install -y ros-jazzy-rosbridge-suite
-$ sudo -H apt-get install -y ros-jazzy-usb-cam
-$ sudo -H apt-get install -y ros-jazzy-xacro
-$ sudo apt install python3-venv
-$ sudo -H apt-get install -y ros-jazzy-joint-state-publisher
+$ sudo apt update
+$ sudo apt install -y $(grep -v '^\s*#' apt-dependencies.txt | tr '\n' ' ')
+$ sudo rosdep init          # once per machine; writes /etc/ros/rosdep/
 ```
 
 ## Part I - Set up your workspace to work with Shutter
