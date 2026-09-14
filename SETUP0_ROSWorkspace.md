@@ -114,9 +114,7 @@ in your home directory. To do this, follow steps 1-2 in this tutorial:
     > When running commands on a terminal, pay attention to the information that is printed in the terminal. If you see any errors, please post them in Ed discussion and/or communicate with the course staff. 
 
     Now you should have an install space in `~/ros2_ws/install`, which contains its own `setup.bash` file.
-    Sourcing this file will `overlay` the install space onto your environment. 
-
-    > Overlaying refers to building and using a ROS 2 package from source on top of an existing version of that same package (e.g., installed at the system level in /opt/ros/jazzy). For more information on overlaying, read [this tutorial](https://docs.ros.org/en/eloquent/Tutorials/Workspace/Creating-A-Workspace.html#:~:text=You%20also%20have,its%20parent%20underlays.).
+    Sourcing this file will `overlay` the install space onto your environment. Overlaying refers to building and using a ROS 2 package from source on top of an existing version of that same package (e.g., installed at the system level in /opt/ros/jazzy). For more information on overlaying, read [this tutorial](https://docs.ros.org/en/eloquent/Tutorials/Workspace/Creating-A-Workspace.html#:~:text=You%20also%20have,its%20parent%20underlays.).
 
     > Note that the `colcon build` command generated a `build` directory when it compiled the code in your `src` folder. This `build` directory has intermediary build files needed during the compilation process to generate the executables and libraries in the `install` folder. 
     If you ever need to, you can delete the `build` and `install` folders and re-run `colcon build` within `ros2_ws` to recompile everything from scratch.
@@ -145,18 +143,18 @@ with [ros2 launch](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/La
     ```bash
     $ source /opt/ros/jazzy/setup.bash     # only necessary if not sourced already through the .bashrc file
     $ source ~/ros2_ws/install/setup.bash  # only necessary if not sourced already through the .bashrc file
-    $ source .venv/bin/activate
-    $ ros2 launch shutter_bringup demo.launch.py use_sim_time:=true
+    $ ros2 launch shutter_bringup shutter_sim.launch.py face:=true
     ```
     
-    > Ros2 launch is a tool for easily launching and configuring multiple ROS 2 nodes. Instead of starting each node in a separate terminal, a launch file allows you to start them all with a single command, automatically setting their specific configuration parameters. You will often be working with launch files in your assignments.
+    > `ros2 launch` is a tool for easily launching and configuring multiple ROS 2 nodes. Instead of starting each node in a separate terminal, a launch file allows you to start them all with a single command, automatically setting their specific configuration parameters. You will often be working with launch files in your assignments.
     
-    The demo.launch.py file will do many things: 
+    The [shutter_sim.launch.py](shutter_bringup/launch/shutter_sim.launch.py) file will run another launch file ([shutter_mujoco.launch.py](shutter_mujoco_sim/launch/shutter_mujoco.launch.py)) which will open up a [MuJoCo simulation](https://mujoco.org/) of the robot and set up connections between ROS 2 and MuJoCo. 
+
+    <img src="https://shutter-ros2.readthedocs.io/bim/_images/shutter_mujoco_face.png" alt="mujoco simulation" width="600px"/>
     
-    1. It will run another launch file (shutter_bringup/launch/shutter_unity.launch.py) which will open up the Unity simulation of the robot and set up a dedicated TCP connection between ROS 2 and Unity. The simulation code will be downloaded from Google Drive if this is the first time you are running the simulation in your workspace.
+    The [shutter_mujoco.launch.py](shutter_mujoco_sim/launch/shutter_mujoco.launch.py) script in turn runs [simple_face.launch.py](shutter_face_ros/launch/simple_face.launch.py) to begin face rendering for the robot, [shutter_control.launch.py](https://gitlab.com/interactive-machines/shutter/shutter-ros2/-/blob/bim/shutter_hardware_interface/launch/shutter_control.launch.py?ref_type=heads) to bring up the [ros2_control stack](https://control.ros.org/rolling/index.html) on the robot and publish its state as well as start motion controllers.
     
-    2. It will run a [robot_state_publisher](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Tf2-Main/Tf2-Main.html) node that publishes 
-    information about the coordinate frames within the body of the robot as well as a description of the robot body. The information about the frames is sent to [tf2](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Tf2-Main/Tf2-Main.html), which handles all coordinate transforms in the ROS system. The description of the robot is in [URDF format](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/URDF/URDF-Main/URDF-Main.html). In particular, the URDF model has information about the the joints of the robot and its sensors, including specific properties and relative placement.
+    The information about the frames is sent to [tf2](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Tf2-Main/Tf2-Main.html), which handles all coordinate transforms in the ROS system. The description of the robot is in [URDF format](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/URDF/URDF-Main/URDF-Main.html). In particular, the URDF model has information about the the joints of the robot and its sensors, including specific properties and relative placement.
 
         > The robot description is published through the `/robot_description` topic. You can see the information being sent through this topic using the `ros2 topic echo /robot_description` in a terminal.
 
