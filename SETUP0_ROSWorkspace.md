@@ -127,7 +127,7 @@ in your home directory. To do this, follow steps 1-2 in this tutorial:
 
     > By default, ROS 2 will search for nodes on all computers within your network's computer. Thus, it is critical that you setup the auatomatic discovery range to `LOCALHOST`.
 
-Because it is likely that multiple students in BIM will end up using the same machine for the assignments, we ask you to please set up a `ROS_DOMAIN_ID` that is unique to you in the class. This will minimize the chances that when you are working on the assignment, someone else's node interferes with your work. You should set up this variable in your `~/.bashrc` file: ```export ROS_DOMAIN_ID=X``` where X is the number next to your name in this [list](https://yale.instructure.com/courses/108557/files/folder/Data?preview=11520447).
+Because it is likely that multiple students in BIM will end up using the same machine for the assignments, we ask you to please set up a `ROS_DOMAIN_ID` that is unique to you in the class. This will minimize the chances that when you are working on the assignment, someone else's node interferes with your work. You should set up this variable in your `~/.bashrc` file: ```export ROS_DOMAIN_ID=X``` where X is the number next to your name in this [list](https://yale.instructure.com/courses/119125/files/folder/Data?preview=13031843).
 
 6. Install Python dependencies in a virtual environment:
 
