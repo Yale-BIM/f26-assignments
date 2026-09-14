@@ -101,57 +101,35 @@ in your home directory. To do this, follow steps 1-2 in this tutorial:
     [shutter-ros2](https://gitlab.com/interactive-machines/shutter/shutter-ros2.git) repository
     to understand its content and general organization. You can also access the documentation for shutter-ros at [https://shutter-ros2.readthedocs.io](https://shutter-ros2.readthedocs.io). 
 
-3. In `~/ros2_ws/src/shutter-ros2/modules/ROS-TCP-Endpoint/setup.cfg`, update "script-dir" to "script_dir", and "install-scripts" to "install_scripts". This change is necessary to fix for an installation error that can occur with modern versions of setuptools when installing [ROS-TCP-Endpoint](https://github.com/Unity-Technologies/ROS-TCP-Endpoint) in your workspace.
-
-    > For this course, we have created a simulation of the Shutter robot with the Unity game engine. This simulation utilizes the ROS-TCP-Endpoint package to connect to ROS. If you want to know more about how this works, check out the Unity Robotics Hub documentation [here](https://github.com/Unity-Technologies/Unity-Robotics-Hub/blob/main/tutorials/ros_unity_integration/README.md).
-
-4. Build the packages in the src directory of your workspace with `colcon build`. 
+3. Build the packages in the src directory of your workspace with `colcon build`. 
 
     ```bash
     # Build your workspace
     $ cd ~/ros2_ws
-    $ colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+    $ colcon build --packages-skip moveit_ros_tests moveit_runtime --cmake-args -DCMAKE_BUILD_TYPE=Release
     ```
 
     (again, be patient...)
 
+    > When running commands on a terminal, pay attention to the information that is printed in the terminal. If you see any errors, please post them in Ed discussion and/or communicate with the course staff. 
+
     Now you should have an install space in `~/ros2_ws/install`, which contains its own `setup.bash` file.
     Sourcing this file will `overlay` the install space onto your environment. 
-    
-    > Overlaying refers to building and using a ROS 2 package from source on top of an existing version of that same package (e.g., installed at the system level in /opt/ros/jazzy). For more information on overlaying, read [this tutorial](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Creating-A-Workspace/Creating-A-Workspace.html#source-the-overlay).
+
+    > Overlaying refers to building and using a ROS 2 package from source on top of an existing version of that same package (e.g., installed at the system level in /opt/ros/jazzy). For more information on overlaying, read [this tutorial](https://docs.ros.org/en/eloquent/Tutorials/Workspace/Creating-A-Workspace.html#:~:text=You%20also%20have,its%20parent%20underlays.).
 
     > Note that the `colcon build` command generated a `build` directory when it compiled the code in your `src` folder. This `build` directory has intermediary build files needed during the compilation process to generate the executables and libraries in the `install` folder. 
     If you ever need to, you can delete the `build` and `install` folders and re-run `colcon build` within `ros2_ws` to recompile everything from scratch.
 
-5. Configure your bash environment. First, add ```source /opt/ros/jazzy/setup.bash``` and ```source ~/ros2_ws/install/setup.bash``` at the end of your `.bashrc` file to automatically set up your environment with your workspace every time you open a new shell. Otherwise, make sure to source ~/ros2_ws/install/setup.bash on every new shell that you want to use to work with ROS 2. Sourcing setup.bash from your install space will ensure that ROS 2 can work properly with the code that you've added to and built in ~/ros2_ws. Second, add ```export ROS_AUTOMATIC_DISCOVERY_RANGE="LOCALHOST"``` at the end of your `.bashrc` file to ensure that ROS 2 only runs on your local network. 
+4. Configure your bash environment. First, add ```source /opt/ros/jazzy/setup.bash``` and ```source ~/ros2_ws/install/setup.bash``` at the end of your `.bashrc` file to automatically set up your environment with your workspace every time you open a new shell. Otherwise, make sure to source ~/ros2_ws/install/setup.bash on every new shell that you want to use to work with ROS 2. Sourcing setup.bash from your install space will ensure that ROS 2 can work properly with the code that you've added to and built in ~/ros2_ws. 
+
+    Second, add ```export ROS_AUTOMATIC_DISCOVERY_RANGE="LOCALHOST"``` at the end of your `.bashrc` file to ensure that ROS 2 only runs on your local network. 
 
     > By default, ROS 2 will search for nodes on all computers within your network's computer. Thus, it is critical that you setup the auatomatic discovery range to `LOCALHOST`.
 
-Because it is likely that multiple students in BIM will end up using the same machine for the assignments, we ask you to please set up a `ROS_DOMAIN_ID` that is unique to you in the class. This will minimize the chances that when you are working on the assignment, someone else's node interferes with your work. You should set up this variable in your `~/.bashrc` file: ```export ROS_DOMAIN_ID=X``` where X is the number next to your name in this [list](https://yale.instructure.com/courses/119125/files/folder/Data?preview=13031843).
+    Because it is likely that multiple students in BIM will end up using the same machine for the assignments, we ask you to please set up a `ROS_DOMAIN_ID` that is unique to you in the class. This will minimize the chances that when you are working on the assignment, someone else's node interferes with your work. You should set up this variable in your `~/.bashrc` file: ```export ROS_DOMAIN_ID=X``` where X is the number next to your name in this [list](https://yale.instructure.com/courses/119125/files/folder/Data?preview=13031843).
 
-6. Install Python dependencies in a virtual environment:
-
-    ```
-    # (Important) Open a new terminal
-    $ source /opt/ros/jazzy/setup.bash     # only necessary if the command is not in the .bashrc file
-    $ source ~/ros2_ws/install/setup.bash  # only necessary if the command is not in the .bashrc file
-    $ cd ~/ros2_ws/
-    $ python3 -m venv --system-site-packages .venv   # create a new Python virtual environment
-    $ source .venv/bin/activate         # activate the virtual environment
-    $ pip3 install gdown          # install library to download Shutter simulation
-    $ colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release    # build the ros workspace again
-    ```
-
-    To run any ROS commands in a new terminal in the future, you should first source the ROS 2 environment and then activate the Python virtual environment.
-    ```
-    $ cd ~/ros2_ws/
-    $ source /opt/ros/jazzy/setup.bash     # only necessary if the command is not in the .bashrc file
-    $ source ~/ros2_ws/install/setup.bash  # only necessary if the command is not in the .bashrc file
-    $ source .venv/bin/activate
-    ```
-
-    When running commands on a terminal, pay attention to the information that is printed in the terminal. If you see any errors,
-    please post them in Ed discussion and/or communicate with the course T.F.       
+      
 
 ## Part II - Test out Shutter's Simulation
 
