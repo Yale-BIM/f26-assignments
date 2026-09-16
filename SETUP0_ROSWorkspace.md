@@ -196,11 +196,11 @@ with [ros2 launch](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/La
     $ ros2 control list_controllers
     ```
     You should then see a list with three elements:
-    - `joint_group_controller`: position controller that takes as input the position in radians for each of the 4 joints in the robot. The controller claims the joint's position command interface (inactive).
-    - `follow_trajectory_controller`: trajectory controller that takes as input 1 or more joint positions, so you can make the robot motion follow a sequence of commands with a single instruction. The controller claims the joint's position command interface as well so it cannot be active when `joint_group_controller` is active (active). 
-    - `joint_state_broadcaster`: state interface that broadcasts the joint states in `/joint_states`, e.g., so that `tf` can update the coordinate frames in the robot's body (active)  
+    - `joint_group_controller`: position controller that takes as input the position in radians for each of the 4 joints in the robot. The controller claims the joint's position command interface (**inactive**).
+    - `follow_trajectory_controller`: trajectory controller that takes as input 1 or more joint positions, so you can make the robot motion follow a sequence of commands with a single instruction. The controller claims the joint's position command interface as well so it cannot be active when `joint_group_controller` is active (**active**). 
+    - `joint_state_broadcaster`: state interface that broadcasts the joint states in `/joint_states`, e.g., so that `tf` can update the coordinate frames in the robot's body (**active**)  
 
-    With the `follow_trajectory_controller` being active, you can now command the robot by sending it a `trajectory` of poses. For example, in the same  terminal, run:
+    With the `follow_trajectory_controller` being active, you can now command the robot by sending it a `trajectory` of poses. For example, in the same  terminal, run the following command:
     ```bash
     ros2 topic pub --once /follow_trajectory_controller/joint_trajectory \
     trajectory_msgs/msg/JointTrajectory "{
@@ -287,6 +287,6 @@ exchange information between nodes.
     
     For example, the node `/robot_state_publisher` publishes messages to the `/robot_description` topic. Thus, you should see a directed edge in the graph from the node to the topic. 
     
-    > The node [rosout](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Nodes/Understanding-ROS2-Nodes.html) is a "dead sink" in the sense that it does not have subscribers in the current state of the ROS system. It can be revealed in `rqt_graph` by disabling the option to hide "dead sinks". Rosout implements a system-wide logging mechanism for messages sent to the /rosout topic. You can read more about logging in ROS 2 [here](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Logging.html).
+    > In ROS 2, every node automatically publishes its log messages to the `/rosout` topic (see [this page](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Logging.html) for  more information about logging). In the current state of the system `/rosout` is a "dead sink" — it has publishers but no subscribers — so `rqt_graph` would hide it under both the "Debug" and "Dead sinks" options. 
     
 At this point, please continue setting up your assignment repository as in the [SETUP1_GitAssignmentRepo.md](SETUP1_GitAssignmentRepo.md) instructions.
