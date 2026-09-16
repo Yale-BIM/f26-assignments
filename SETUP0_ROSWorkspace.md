@@ -162,7 +162,7 @@ with [ros2 launch](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/La
 
     The information about the robot state is sent to [tf2](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Tf2-Main.html), which stores and helps reason about all the coordinate systems in the ROS network. 
 
-2. Visualize the robot model and its coordinate frames in [RViz2](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/RViz/RViz-Main.html)--the main visualization interface in ROS:
+2. Visualize the robot model and its coordinate frames in [RViz2](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/RViz/RViz-Main.html)--the main visualization interface in ROS. In a new terminal, where you have sourced your workspace `setup.bash`, run:
 
     ```bash
     ros2 run rviz2 rviz2 --d ~/ros2_ws/src/f26-assignments/config/shutter-model.rviz
@@ -177,8 +177,8 @@ with [ros2 launch](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/La
     Each coordinate frame in the robot associated with a [link](https://wiki.ros.org/urdf/XML/link). For example: 
 
     1. `shutter_base_link`, which is at the very bottom of the robot with the $x$ axis (red) pointing forward; 
-    2. `shutter_shoulder_link`, which is above `base_link` and allows the robot to rotate left and right (yaw angle); 
-    3. `shutter_biceps_link`, which is above `shoulder_link` and allows the robot's head to move forward and backward;
+    2. `shutter_shoulder_link`, which is above `shutter_base_link` and allows the robot to rotate left and right (yaw angle); 
+    3. `shutter_biceps_link`, which is above `shutter_shoulder_link` and allows the robot's head to move forward and backward;
     4. `shutter_forearm_link`, which allows the head to move up and down; and
     5. `shutter_wrist_link`, which allows the head to tilt.
 
@@ -190,33 +190,64 @@ with [ros2 launch](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/La
     its screen.
 
 
-3. Try commanding the robot from the command line. You can send specific requests for the position of each
-of the 4 joints in the robot as follows:
+3. Try commanding the robot from the command line. First, let's see what control options are available. In a new terminal, after sourcing your workspace `setup.bash`, run:
 
     ```bash
-    $ ros2 topic pub --once /unity_joint_group_controller/command std_msgs/msg/Float64MultiArray "data: [0.0, -1.5, -1.0, 0.0]"
+    $ ros2 control list_controllers
+    ```
+    You should then see a list with three elements:
+    - `joint_group_controller`: position controller that takes as input the position in radians for each of the 4 joints in the robot. The controller claims the joint's position command interface (inactive).
+    - `follow_trajectory_controller`: trajectory controller that takes as input 1 or more joint positions, so you can make the robot motion follow a sequence of commands with a single instruction. The controller claims the joint's position command interface as well so it cannot be active when `joint_group_controller` is active (active). 
+    - `joint_state_broadcaster`: state interface that broadcasts the joint states in `/joint_states`, e.g., so that `tf` can update the coordinate frames in the robot's body (active)  
+
+    With the `follow_trajectory_controller` being active, you can now command the robot by sending it a `trajectory` of poses. For example, in the same  terminal, run:
+    ```bash
+    ros2 topic pub --once /follow_trajectory_controller/joint_trajectory \
+    trajectory_msgs/msg/JointTrajectory "{
+    joint_names: ['joint_1', 'joint_2', 'joint_3', 'joint_4'],
+    points: [
+        {positions: [1.5, 0.0, 0.0, 0.0], time_from_start: {sec: 2, nanosec: 0}},
+        {positions: [0.0, 0.0, 0.0, 0.0], time_from_start: {sec: 4, nanosec: 0}}
+    ]
+    }"
     ```
 
-    The [ros2 topic](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Topics/Understanding-ROS2-Topics.html) tool used above publishes a message to the `/unity_joint_group_controller/command` topic. This message has [std_msgs/msg/Float64MultiArray](https://docs.ros2.org/api/std_msgs/msg/Float64MultiArray.html) as type.This type has two fields `data` and `layout`, but the above command only sets the `data` field to "[0.0, -1.5, -1.0, 0.0]". 
-    
-    Each of the values in the array correspond to the position of one joint in Shutter (in radians). That is, the command requests the robot to set its first joint (the servo in the base of the robot) to the position "0.0" radians, which makes the robot look forward. Similarly, the command requests that the robot sets its second joint to the position "-1.54" radians. You can try sending other servo positions to the robot by repeating the command line above with different values for the `data` field.
+    <img src="images/shutter-traj.gif"/>
 
-    > Note that the MuJoCo simulation would stop the robot from moving upon self-collisions. For example,
-    if you send the command above with: "data: [0.0, -1.5, -1.0, -2.0]" then the robot would only
-    reach a position close to [0.0, -1.5, -1.0, -1.57]. You can check which position the robot has at any time during the simulation with the following command:
+    The prior [ros2 topic](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Topics/Understanding-ROS2-Topics.html) tool publishes a message to the `/follow_trajectory_controller/joint_trajectory` topic. This message has [trajectory_msgs/msg/JointTrajectory](https://docs.ros.org/en/jazzy/p/trajectory_msgs/msg/JointTrajectory.html) as type. Specifically, we provide two set of commands for the robot, separated by 2 seconds in time. The only difference between the commands is the position of the first joint (the first value in the `positions` field), so the robot rotates to look to its left (1.5 radians) and then looks forward again (0 radians). You can try sending other trajectories to the robot by changing the entries in the `points` list.
+    
+    To change controllers, run:
+    ```bash
+    ros2 control switch_controllers \
+        --activate joint_group_controller \
+        --deactivate follow_trajectory_controller
+    ```
+
+    So you should now see:
+    ```bash
+    $ ros2 control list_controllers
+    joint_group_controller       position_controllers/JointGroupPositionController      active  
+    follow_trajectory_controller joint_trajectory_controller/JointTrajectoryController  inactive
+    joint_state_broadcaster      joint_state_broadcaster/JointStateBroadcaster          active  
+    ```
+
+    And you can now control the robot with a given position command. For example, the command below would move `joint_2` to position 1.0 (in radians) and `joint_3` to position 1.54:
+    ```bash
+    ros2 topic pub --once /joint_group_controller/commands std_msgs/msg/Float64MultiArray "{data: [0.0, 1.0, 1.54, 0.0]}"
+    ```
+
+    The above command publishes a message to the `/joint_group_controller/commands` topic, which has [std_msgs/msg/Float64MultiArray](https://docs.ros.org/en/jazzy/p/std_msgs/msg/Float64MultiArray.html) type. Each of the values in the array correspond to the position of one joint in Shutter (in radians). That is, the command requests the robot to set its first joint (the servo in the base of the robot) to the position "0.0" radians, which makes the robot look forward. Similarly, the command requests that the robot sets its second joint to the position "1.0" radians. You can try sending other servo positions to the robot by repeating the command line above with different values for the `data` field.
+
+    > Note that the MuJoCo simulation would stop the robot from moving upon self-collisions. For example, if you send the command above with: "data: [0.0, 2.0, 1.54, 0.0]" then the robot would only reach a position close to [0.0, 1.54, 1.54, 0.0]. You can check which position the robot has at any time during the simulation with the following command:
 
     ```bash
     $ ros2 topic echo /joint_states
     ```
 
-3. Visualize the main coordinate frames of the robot's arm in RViz2, as shown in the image below:
+    > Note that the floor in the MuJoCo simulation is deliberately not a physical surface; it is only scenery. The arm can pass through it because there's nothing to hit. Changing this requires a change to the MuJoCo scene, defined in [shutter.scene.xml](https://gitlab.com/interactive-machines/shutter/shutter-ros2/-/blob/bim/shutter_mujoco_sim/mujoco/v.2.0/shutter.scene.xml?ref_type=heads). While this could be useful for a project to avoid environmental collisions, you should not change this scene file for the assignments.
 
 
-    To get this visualization, add a [tf2 Display](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Tf2-Main/Tf2-Main.html) in RViz2
-    and then select the corresponding frames in the tf2/Frames submenu on the left panel.
-
-
-4. Finally, use [rqt_graph](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Nodes/Understanding-ROS2-Nodes.html) to visualize the 
+4. Finally, use [rqt_graph](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Topics/Understanding-ROS2-Topics.html#rqt-graph) to visualize the 
 [nodes](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Nodes/Understanding-ROS2-Nodes.html) that are currently running
 in your ROS 2 system and the [topics](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Topics/Understanding-ROS2-Topics.html) that are being used to 
 exchange information between nodes.
@@ -225,36 +256,36 @@ exchange information between nodes.
     $ ros2 run rqt_graph rqt_graph
     ```
     
-    Uncheck the "Group" options (e.g., "Namespaces" and "Actions") in rqt_graph, uncheck the "Debug", "tf" and "Params" options under "Hide", and select "Nodes/Topics(all)" to visualize all of the nodes that are sharing information in the graph. You should see a total of 7 `ROS 2 nodes` (displayed as ellipses) in the graph: 
+    Uncheck the "Group" options (e.g., "Namespaces" and "Actions") in rqt_graph, uncheck the "Debug", "tf" and "Params" options under "Hide", and select "Nodes/Topics(all)" to visualize all of the nodes that are sharing information in the graph. You should see as many `ROS 2 nodes` (displayed as ellipses) in the graph as what you get with:
+    ```bash
+    ros2 node list --all
+    ``` 
+
+    For example, the image below illustrates an example output for `rqt_graph` when the following nodes were running:
+    ```bash
+    $ ros2 node list --all
+    /_ros2cli_daemon_0_67c3558997744fe6b00e0feb885ed9dd
+    /controller_manager
+    /follow_trajectory_controller
+    /gaze_master
+    /joint_group_controller
+    /joint_state_broadcaster
+    /mujoco_ros2_control_node
+    /robot_state_publisher
+    /rqt_gui_py_node_775043
+    /rviz
+    /shuttersystem
+    /simple_face
+    /transform_listener_impl_5f56405d0110
+    ```
 
     <img src="images/rqtgraph-ros2.png" />
-
-    The nodes in the picture above include:
-    
-    - /robot_state_publisher
-    - /rqt_gui_py_node_XXXXX
-    - /unity_simulation
-    - /simulation_manager
-    - /rviz...
-    <br/>
-    
-    > The full name of the rqt_graph node includes numbers XXXXX, which indicate that the
-    program was run as an anonymous node. The numbers were generated 
-    automatically when the node was initialized to provide the program a unique name, e.g.,
-    in case you want to run multiple versions of rqt_graph. More information about initializing nodes
-    in C++ or Python can be found 
-    [here](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Cpp-Publisher-And-Subscriber.html) or 
-    [here](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Py-Publisher-And-Subscriber.html), respectively.
     
     The nodes are connected in the graph through `ROS 2 topics` (displayed as squares). 
     ROS 2 topics are named buses over which data [messages](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Topics/Understanding-ROS2-Topics.html) are exchanged. 
     There can be multiple publishers and subscribers to a topic. 
     
-    > In general, nodes are not aware of who they are communicating with. 
-    Instead, nodes that are interested in data *subscribe* to the relevant topic; 
-    nodes that generate data *publish* to the relevant topic. 
-    
-    For example, the node /robot_state_publisher publishes messages to the /robot_description topic. Thus, you should see a directed edge in the graph from the node to the topic. 
+    For example, the node `/robot_state_publisher` publishes messages to the `/robot_description` topic. Thus, you should see a directed edge in the graph from the node to the topic. 
     
     > The node [rosout](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Nodes/Understanding-ROS2-Nodes.html) is a "dead sink" in the sense that it does not have subscribers in the current state of the ROS system. It can be revealed in `rqt_graph` by disabling the option to hide "dead sinks". Rosout implements a system-wide logging mechanism for messages sent to the /rosout topic. You can read more about logging in ROS 2 [here](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Logging.html).
     
