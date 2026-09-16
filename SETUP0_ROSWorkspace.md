@@ -152,17 +152,45 @@ with [ros2 launch](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/La
 
     <img src="https://shutter-ros2.readthedocs.io/bim/_images/shutter_mujoco_face.png" alt="mujoco simulation" width="600px"/>
     
-    The [shutter_mujoco.launch.py](shutter_mujoco_sim/launch/shutter_mujoco.launch.py) script in turn runs [simple_face.launch.py](shutter_face_ros/launch/simple_face.launch.py) to begin face rendering for the robot, [shutter_control.launch.py](https://gitlab.com/interactive-machines/shutter/shutter-ros2/-/blob/bim/shutter_hardware_interface/launch/shutter_control.launch.py?ref_type=heads) to bring up the [ros2_control stack](https://control.ros.org/rolling/index.html) on the robot and publish its state as well as start motion controllers.
+    The [shutter_mujoco.launch.py](shutter_mujoco_sim/launch/shutter_mujoco.launch.py) script in turn runs [simple_face.launch.py](shutter_face_ros/launch/simple_face.launch.py) to begin face rendering for the robot. Also, it runs [shutter_control.launch.py](https://gitlab.com/interactive-machines/shutter/shutter-ros2/-/blob/bim/shutter_hardware_interface/launch/shutter_control.launch.py?ref_type=heads) to bring up the [ros2_control stack](https://control.ros.org/rolling/index.html) on the robot as well as publish a model of the robot and its current state (i.e., the position of its servos).
     
-    The information about the frames is sent to [tf2](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Tf2-Main/Tf2-Main.html), which handles all coordinate transforms in the ROS system. The description of the robot is in [URDF format](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/URDF/URDF-Main/URDF-Main.html). In particular, the URDF model has information about the the joints of the robot and its sensors, including specific properties and relative placement.
+    The description of the robot is in [URDF format](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/URDF/URDF-Main.html). In particular, the URDF model has information about the the joints of the robot and its sensors, including specific properties and relative placement.
 
-    > The robot description is published through the `/robot_description` topic. You can see the information being sent through this topic using the `ros2 topic echo /robot_description` in a terminal.
+    > The robot description is published through the `/robot_description` topic. You can see the information being sent through this topic using the `ros2 topic echo --once /robot_description` in a terminal.
 
     > About ROS 2 Parameters: In ROS 1, the robot model used to be stored in a system-level parameter in ROS. But, unlike ROS 1, ROS 2 does not have a central parameter server. Instead, each node maintains its own set of parameters. These parameters are used to configure the node at runtime without needing to recompile code. While parameters are managed by individual nodes, they are still accessible across the entire ROS 2 system. You can use command-line tools (like `ros2 param list` and `ros2 param get <node_name> <param_name>`) to inspect and change a node’s parameters. Launch files are the most common way to set initial parameter values when a system starts up. This parameter system is best used for static, non-binary data such as configuration settings.
 
-    3. It will launch [RViz2](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/RViz/RViz-Main.html) as a visualization interface. RViz can be used to visualize many things in the ROS system, including the state of the robot (e.g., as published via the `/robot_description` topic).
+    The information about the robot state is sent to [tf2](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Tf2-Main.html), which stores and helps reason about all the coordinate systems in the ROS network. 
 
-2. Try commanding the robot from the command line. You can send specific requests for the position of each
+2. Visualize the robot model and its coordinate frames in [RViz2](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/RViz/RViz-Main.html)--the main visualization interface in ROS:
+
+    ```bash
+    ros2 run rviz2 rviz2 --d ~/ros2_ws/src/f26-assignments/config/shutter-model.rviz
+    ```
+
+    <img src="images/shutter_links.png"/>
+
+
+    RViz can be used to visualize many things in the ROS system, including the state of the robot (e.g., as published via the `/robot_description` topic),
+    its coordinate frames (published via `/tf` and `/tf_static`), images (like an image of its face, as published via `/face/image`), etc.
+
+    Each coordinate frame in the robot associated with a [link](https://wiki.ros.org/urdf/XML/link). For example: 
+
+    1. `shutter_base_link`, which is at the very bottom of the robot with the $x$ axis (red) pointing forward; 
+    2. `shutter_shoulder_link`, which is above `base_link` and allows the robot to rotate left and right (yaw angle); 
+    3. `shutter_biceps_link`, which is above `shoulder_link` and allows the robot's head to move forward and backward;
+    4. `shutter_forearm_link`, which allows the head to move up and down; and
+    5. `shutter_wrist_link`, which allows the head to tilt.
+
+    The above 5 links make up a significant portion the kinematic chain of the robot.
+
+    > Note that the robot has many more frames than the 5 links mentioned above. Some of these additional frames
+    do not correspond to real robot links (specific rigid bodies) but were added to the robot's model (its URDF description)
+    for convenience. For example, there are coordinate frames (like `shutter_left_eye`) for helping control the eye's of the robot when rendered in 
+    its screen.
+
+
+3. Try commanding the robot from the command line. You can send specific requests for the position of each
 of the 4 joints in the robot as follows:
 
     ```bash
@@ -173,7 +201,7 @@ of the 4 joints in the robot as follows:
     
     Each of the values in the array correspond to the position of one joint in Shutter (in radians). That is, the command requests the robot to set its first joint (the servo in the base of the robot) to the position "0.0" radians, which makes the robot look forward. Similarly, the command requests that the robot sets its second joint to the position "-1.54" radians. You can try sending other servo positions to the robot by repeating the command line above with different values for the `data` field.
 
-    > Note that the Unity simulation would stop the robot from moving upon self-collisions. For example,
+    > Note that the MuJoCo simulation would stop the robot from moving upon self-collisions. For example,
     if you send the command above with: "data: [0.0, -1.5, -1.0, -2.0]" then the robot would only
     reach a position close to [0.0, -1.5, -1.0, -1.57]. You can check which position the robot has at any time during the simulation with the following command:
 
@@ -183,25 +211,9 @@ of the 4 joints in the robot as follows:
 
 3. Visualize the main coordinate frames of the robot's arm in RViz2, as shown in the image below:
 
-    <img src="images/shutter_links.png"/>
 
     To get this visualization, add a [tf2 Display](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Tf2-Main/Tf2-Main.html) in RViz2
     and then select the corresponding frames in the tf2/Frames submenu on the left panel.
-
-    Each coordinate frame in the robot associated with a [link](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/URDF/URDF-Main/URDF-Main.html): 
-
-    1. `base_link`, which is at the very bottom of the robot with the $x$ axis (red) pointing forward; 
-    2. `shoulder_link`, which is above `base_link` and allows the robot to rotate left and right (yaw angle); 
-    3. `biceps_link`, which is above `shoulder_link` and allows the robot's head to move forward and backward;
-    4. `forearm_link`, which allows the head to move up and down; and
-    5. `wrist_link`, which allows the head to tilt.
-
-    The above 5 links make up a significant portion the kinematic chain of the robot.
-
-    > Note that the robot has many more frames than the 5 links mentioned above. Some of these additional frames
-    do not correspond to real robot links (specific rigid bodies) but were added to the robot's model (its URDF description)
-    for convenience. For example, there are coordinate frames (like `left_eye`) for helping control the eye's of the robot when rendered in 
-    its screen.
 
 
 4. Finally, use [rqt_graph](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Nodes/Understanding-ROS2-Nodes.html) to visualize the 
