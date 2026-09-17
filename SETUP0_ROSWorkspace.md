@@ -106,7 +106,7 @@ in your home directory. To do this, follow steps 1-2 in this tutorial:
     ```bash
     # Build your workspace
     $ cd ~/ros2_ws
-    $ colcon build --packages-skip moveit_ros_tests moveit_runtime --cmake-args -DCMAKE_BUILD_TYPE=Release
+    $ colcon build --packages-skip moveit_ros_tests moveit_runtime --cmake-args -DCMAKE_BUILD_TYPE=Release --parallel-workers 2
     ```
 
     (again, be patient...)
