@@ -10,7 +10,7 @@
 
 You should have access to a computer with `Ubuntu 24.04` and `ROS 2 Jazzy` to complete the assignments in this repository. The instructions below assume that you are using a [bash shell](https://www.gnu.org/software/bash/) to do the assignments.
 
-   > Note that all the apt dependencies that require sudo (admin permissions) below are already installed in the Zoo machines and in the BIM laptops that registered students have access to for the course. Thus, you can skip the next apt install step and only run the pip commands that follow.
+   > Note that all the apt dependencies that require sudo (admin permissions) below are already installed in the Zoo machines and in the BIM laptops that registered students have access to for the course. Simlarly, `rosdep init` has already been executed. Thus, you can skip the next apt install block and only run the pip commands that follow on those computers.
 
 With ROS2 installed, in a terminal, run the following commands to install general system dependencies for Shutter's code:
 
