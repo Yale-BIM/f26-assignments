@@ -127,7 +127,7 @@ Once your repository is setup, you will need to follow the steps below when work
 	> NOTE: Please consult your T.F.(s) if you have difficulty resolving merge conflict(s).
 
 3. Read the README.md file inside the assignments folder for the instructions on what you have to do.
-4. Do the assignment. 
+4. Do the assignment: complete the programming tasks, and the online questions in Gradescope. 
 5. Whenever you want to save your code, commit your work.
 
     ```bash
@@ -144,20 +144,18 @@ Once your repository is setup, you will need to follow the steps below when work
 
     > Your final version of the assignment should be pushed to GitHub before the deadline!
     
-7. Write the corresponding assignment report if one needs to be submitted.
-    
-8. Repeat steps 3-6 as many times as necessary while you work on the assignment.
+7. Repeat steps 3-6 as many times as necessary while you work on the assignment.
 
-9. When you are ready to submit your assignment,
+8. When you are ready to submit your assignment,
     
     i. Gather the specific `commit hash` (SHA) of the version of the code in GitHub
-    that you would like to be evaluated on and add it to the top of your report if a report is requested for the assignment. 
+    that you would like to be evaluated on and add it to the very first online question in Gradescope. 
     
     > To see all of your commits, go to your repository's GitHub page and click where it says "X commits" (right below the download "Code" button in the interface). Copy the commit SHA for the final version of the code and paste it in the report.
     
-    ii. Submit the report (with the commit SHA) as a pdf to [Gradescope](). If the assignment asks for other documents, submit them to Gradescope as well.
+    ii. Submit the online assignment (with the commit SHA) in Gradescope.
 
-    > Most assignments will appear twice in Gradescope: once for the submission of the report, once for the submission of code. The report and any other extra file that is requested should be submitted to the Report assignment; your code in GitHub should be submitted to the Code assignment. 
+    > Most assignments will appear twice in Gradescope: once for the submission of the online report, once for the submission of code. The online report questions and any other extra file that is requested beyond your code should be submitted to the online report assignment; your code in GitHub should be submitted to the code assignment. 
  
 Note that assignments may have public tests to familiarize you with the process of submitting code through Gradescope. They all have private tests to
 evaluate your submission. These private tests are tests for which you won't get access to until after the submission date. 
