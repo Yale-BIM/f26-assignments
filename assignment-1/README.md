@@ -129,7 +129,7 @@ it refers to the second version of the tf package. This is the standard transfor
 
     That launch files runs `ros2 launch shutter_bringup shutter_sim.launch.py face:=true` to bring up MuJoCo and robot control nodes, and Rviz 2 (hereafter just RViz) with `--ros-args -p use_sim_time:=true` so that the time that it uses is driven by MuJoCo's clock. You should then see:
 
-    <img src="images/shutter_links.png"/>
+    <img src="../images/shutter_links.png"/>
 
 3. Change the `Fixed Frame` to `shutter_base_link` in RViz's Global Options panel. This will ensure
 that the robot's model is shown straight up in the middle of the 3D visualization area of RViz.
