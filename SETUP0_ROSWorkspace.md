@@ -165,11 +165,12 @@ with [ros2 launch](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/La
 2. Visualize the robot model and its coordinate frames in [RViz2](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/RViz/RViz-Main.html)--the main visualization interface in ROS. In a new terminal, where you have sourced your workspace `setup.bash`, run:
 
     ```bash
-    ros2 run rviz2 rviz2 --d ~/ros2_ws/src/f26-assignments/config/shutter-model.rviz
+    ros2 run rviz2 rviz2 -d ~/ros2_ws/src/f26-assignments/assignment-1/shutter_lookat/config/shutter-model.rviz --ros-args -p use_sim_time:=true
     ```
 
     <img src="images/shutter_links.png"/>
 
+    The argument `-d <config.rviz>` provides RViz a configuration file that sets its windows and plugins in a specific way, such that it looks as in the above image when it opens. The `--ros-args` argument indicates that what follows are arguments for RViz in relation to ROS, and `-p` corresponds to `--param`, i.e., so what follows is a parameter related to ROS. Then, `--ros-args -p use_sim_time:=true` is a shortcut for making RViz use simulated time while it runs (as output by the MuJoCo simulation) instead of your machine's current time.
 
     RViz can be used to visualize many things in the ROS system, including the state of the robot (e.g., as published via the `/robot_description` topic),
     its coordinate frames (published via `/tf` and `/tf_static`), images (like an image of its face, as published via `/face/image`), etc.
