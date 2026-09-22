@@ -33,6 +33,7 @@ ros-jazzy-ros2-control-cmake
 ros-jazzy-ros2controlcli
 ros-jazzy-mujoco-vendor
 ros-jazzy-tf-transformations
+ros-jazzy-turtle-tf2-py
 ros-jazzy-urdfdom-py
 ros-jazzy-usb-cam
 ros-jazzy-joint-state-publisher
