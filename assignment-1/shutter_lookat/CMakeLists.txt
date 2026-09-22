@@ -27,13 +27,17 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   DEPENDENCIES geometry_msgs std_msgs
 )
 
-# Install Python scripts
+# Install Python scripts. Globbed rather than listed because the relevant python
+# files change as students work on the assignment.
+# CONFIGURE_DEPENDS re-runs the glob at build time, so a newly created script is installed
+# by the next `colcon build` without a manual reconfigure.
+file(GLOB PYTHON_SCRIPT_FILES
+  CONFIGURE_DEPENDS
+  LIST_DIRECTORIES false
+  "${CMAKE_CURRENT_SOURCE_DIR}/scripts/*.py"
+)
 install(PROGRAMS
-  scripts/generate_target.py
-  scripts/look_forward.py
-  scripts/publish_target_relative_to_realsense_camera.py
-  scripts/virtual_camera.py
-  scripts/fancy_virtual_camera.py
+  ${PYTHON_SCRIPT_FILES}
   DESTINATION lib/${PROJECT_NAME}
 )
 
