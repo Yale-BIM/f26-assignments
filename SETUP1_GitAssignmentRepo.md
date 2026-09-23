@@ -96,7 +96,7 @@ Settings -> Danger Zone.
 
 9. Add the course staff as members of your GitHub repository in Settings -> Collaborators and teams. In the Manage access section, choose "Add people", and add the Yale usernames for the instructor and teaching fellow(s).
 
-	> The instructor's email is `marynel.vazquez _at_ yale.edu`, and the ULAs emails are `brianna-alexand.stan _at_ yale.edu` and `emir.admed _at_ yale.edu` with `_at_` meaning `@`.
+	> The instructor's github username is `marynelv`, and the ULAs usernames are `bri-stan` and `EmirataG`.
 
 10. Once you have finished setting up your repository, fill and submit this [Repository Record Form](https://docs.google.com/forms/d/e/1FAIpQLSc0d7M-q_xngW8dq-XOlsxuGN2ZiZQjQjOkJjPAG3EYBgGtag/viewform?usp=publish-editor). Your response will be used to check that your repository exists, has been setup properly, and that the instructor and ULAs have access to it.
 
