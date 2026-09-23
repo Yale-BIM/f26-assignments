@@ -29,8 +29,9 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_test_description():
     # Bring up the MuJoCo simulation. This is the same start_sim.launch.py that
-    # generate_target.launch.py runs for the assignment, only without RViz, which
-    # the tests have no use for. MuJoCo owns the clock here -- it publishes
+    # generate_target.launch.py runs for the assignment, only without RViz or the
+    # MuJoCo window, which the tests have no use for and which let them run over
+    # ssh and on CI. MuJoCo owns the clock here -- it publishes
     # /clock and starts its own nodes with use_sim_time:=true -- which is why
     # every node started below sets use_sim_time as well.
     sim_launch = IncludeLaunchDescription(
@@ -43,16 +44,7 @@ def generate_test_description():
         ]),
         launch_arguments={
             'rviz': 'false',
-            # Not headless. mujoco_ros2_control's headless physics loop does not
-            # hold the simulation to real time -- the clock advances in large,
-            # irregular jumps (hundreds of simulated seconds in a few wall
-            # seconds). Everything here is stamped on that clock, so under
-            # headless:=true the target poses race ahead of the transforms that
-            # robot_state_publisher has published and every lookup_transform at
-            # the pose's own stamp fails as an extrapolation. The MuJoCo window
-            # therefore has to be up for these tests, as it is when the
-            # assignment is run by hand.
-            'headless': 'false',
+            'headless': 'true',
             'face': 'false',
         }.items()
     )
