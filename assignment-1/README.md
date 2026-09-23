@@ -131,6 +131,11 @@ it refers to the second version of the tf package. This is the standard transfor
 
     <img src="../images/shutter_links.png"/>
 
+
+    > As mentioned earlier, [ros2 launch](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Launch/Creating-Launch-Files.html) is a tool for easily launching multiple
+    ROS 2 nodes. A `ros2 launch` script can be written in Python, XML or YAML format, according to [this specification](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Launch/Creating-Launch-Files.html).
+
+
 3. Change the `Fixed Frame` to `shutter_base_link` in RViz's Global Options panel. This will ensure
 that the robot's model is shown straight up in the middle of the 3D visualization area of RViz.
     
@@ -246,9 +251,6 @@ script below, make sure that you are not running any other node in ROS 2.
     
     <img src="docs/shutter_target.png"/>    
     
-    > [Ros2 launch](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Launch/Creating-Launch-Files.html) is a tool for easily launching multiple
-    ROS 2 nodes. Ros2 launch scripts are written in Python format, according to [this specification](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Launch/Creating-Launch-Files.html).
-
    
 
 ### Questions / Tasks
