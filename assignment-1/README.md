@@ -186,6 +186,9 @@ that the robot's model is shown straight up in the middle of the 3D visualizatio
 
     Thus, for example, in the snippet above, the first joint (`joint_1`) in the base of the robot has a position close to zero radians. This makes the robot look forward.
 
+7. Test enabling and disabling the `TF` display in RViz. This will make the robot's coordinate frames appear and dissapear. 
+
+    > RViz gives you a convenient way to visualize the kinematic structure of the robot via the `TF` and `RobotModel` plugins. They complement  programmatic ways of accessing the `tf` information, which you'll explore next.
 
 ### Questions / Tasks
 Now you will inspect the robot's tf2 tree with tf2 tools. 
