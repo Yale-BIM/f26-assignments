@@ -94,7 +94,7 @@ which contains the set of assignments and starter code.
 8. Ensure that your repository in GitHub has visibility set to **private** in 
 Settings -> Danger Zone.
 
-9. Add the course instructor and the T.F.(s) as members of your GitHub repository in Settings -> Collaborators and teams. In the Manage access section, choose "Add people", and add the Yale usernames for the instructor and teaching fellow(s).
+9. Add the course staff as members of your GitHub repository in Settings -> Collaborators and teams. In the Manage access section, choose "Add people", and add the Yale usernames for the instructor and teaching fellow(s).
 
 	> The instructor's email is `marynel.vazquez _at_ yale.edu`, and the ULAs emails are `brianna-alexand.stan _at_ yale.edu` and `emir.admed _at_ yale.edu` with `_at_` meaning `@`.
 
