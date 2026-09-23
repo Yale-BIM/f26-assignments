@@ -211,7 +211,7 @@ provide the transformation with both the rotation and translation components.
     from these values. We recommend [this primer](http://wiki.ogre3d.org/Quaternion+and+Rotation+Primer) from Ogre
     if you are confused about different rotation representations.
 
-    > Tip 2: We recommend that you visualize the frames of interest in RViz2 to ensure that the transformation that
+    > Tip 2: We recommend that you visualize the frames of interest in RViz to ensure that the transformation that
     you are computing is in the right direction. Note that 
     ![equation](https://latex.codecogs.com/png.latex?%5E%7BC%7D_%7BO%7DT) is not the same as
     ![equation](https://latex.codecogs.com/png.latex?%5E%7BO%7D_%7BC%7DT).
@@ -237,7 +237,7 @@ with the translation and rotation of the transform ![equation](https://latex.cod
 You will use code that is already provided in this assignment to learn how to publish tf2
 data as described above. To get started, follow the steps below:
 
-1. Inspect the `generate_target.py` Python script in the `scripts` directory of the `shutter_lookat` 
+1. Inspect the [generate_target.py](shutter_lookat/scripts/generate_target.py) Python script in the `scripts` directory of the `shutter_lookat` 
 package that is provided as part of this assignment. You should understand how the script creates a 
 simulated moving object and publishes its position relative to the "base_footprint" frame of 
 Shutter through the `/target` topic.
