@@ -316,6 +316,44 @@ given the increased complexity of this node in comparison previous examples. For
         If you want to see how the tests are implemented, check the `shutter_lookat_public_tests` package that is 
         provided as part of this assignment. More specifically, the tests for Part II are implemented in 
         `shutter_lookat_public_tests/test/test_publish_target.py`.
+
+        > Tip: If `test_node_connections` passes but `test_frame_exists` fails with
+        `Failed to find a transformation between shutter_base_footprint and target`, scroll up in
+        the test output to the messages that your own `publish_target_relative_to_realsense_camera.py`
+        node printed. If you see `Lookup would require extrapolation into the future` repeating
+        once per target message, your transform math is probably fine; the problem is that
+        `publish_target_relative_to_realsense_camera.py` executes its callbacks sequentially.
+        >
+        > The target pose is stamped a few milliseconds *after* the newest transform in the tf
+        tree, so a lookup at the pose's own timestamp has to wait briefly for tf to catch up.
+        Both `lookup_transform` and the `tf2_geometry_msgs` `transform()` function take a
+        `timeout` argument for this. But if your `publish_target_relative_to_realsense_camera.py`
+        node uses `rclpy.spin()`, which runs the node with a
+        [`SingleThreadedExecutor`](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Executors.html)
+        by default, then every callback runs on one thread, one at a time. That is, while your `/target`
+        callback is waiting out that timeout, it is holding the only thread that can deliver
+        `/tf` messages into your buffer. The buffer never catches up, so the wait always ends in
+        the error above.
+        >
+        > Letting the callbacks of `publish_target_relative_to_realsense_camera.py` run in
+        parallel fixes this. In the `main()` function of that script, spin your node with a
+        [MultiThreadedExecutor](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Executors.html)
+        instead of `rclpy.spin()`, so that the `/tf` callbacks can keep filling the buffer while
+        your `/target` callback waits:
+
+        ```python
+        # Example: in publish_target_relative_to_realsense_camera.py
+        from rclpy.executors import MultiThreadedExecutor
+
+        def main():
+            rclpy.init()
+            node = PublishTargetRelativeToRealsenseCamera()  # your node class
+            executor = MultiThreadedExecutor()
+            executor.add_node(node)
+            executor.spin()
+        ```
+
+        > A `timeout` of about 0.2 seconds in your `lookup_transform` (or `transform()`) call is likely to suffice: the transform you need is usually only a few milliseconds away.
     
     - Save your work by adding and committing your publish_target_relative_to_realsense_camera.py
     script to your local repository. Push your code to GitHub.
