@@ -136,7 +136,7 @@ that the robot's model is shown straight up in the middle of the 3D visualizatio
     
 5. Change your background color to purple `129; 61; 156` in the Global Options as well. This will make it easier to read the names of the frames on the robot.
     
-6. Test enabling and disabling the `RobotModel` display in RViz. This will make the robot body appear and dissapear. 
+6. Test enabling and disabling the `RobotModel` display in RViz. This will make the robot body appear and dissapear, which can be helpful to contextualize other visualizations in RViz as well as reduce visual clutter. 
 
     The [RobotModel Display type](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Introduction-To-Tf2.html) shows
     the [links](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/URDF/URDF-Main.html) of the robot according to 
@@ -191,11 +191,11 @@ Include this image in your report.
     > Tip: You can also generate the image with the 
     [rqt_tf_tree](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Tf2-Main.html) interface if you prefer.
 
-- **I-2.** Based on the tf2 tree from I-1, which frames are between the robot's *base_footprint* 
-frame and the *camera_color_optical_frame* frame?
+- **I-2.** Based on the tf2 tree from I-1, which frames are between the robot's *shutter_base_footprint* 
+frame and the *shutter_camera_color_optical_frame* frame?
 
 - **I-3.** Based on the tf2 tree, what is the ![equation](https://latex.codecogs.com/png.latex?4%20%5Ctimes%204)<!--$`4 \times 4`$--> transformation ![equation](https://latex.codecogs.com/png.latex?%5E%7BC%7D_%7BO%7DT)<!--$`^{C}_{O}T`$-->
-from the *camera_color_optical_frame* frame (![equation](https://latex.codecogs.com/png.latex?O)<!--$`O`$-->) to the *camera_link* frame (![equation](https://latex.codecogs.com/png.latex?C)<!--$`C`$-->)? Please
+from the *shutter_camera_color_optical_frame* frame (![equation](https://latex.codecogs.com/png.latex?O)<!--$`O`$-->) to the *shutter_camera_link* frame (![equation](https://latex.codecogs.com/png.latex?C)<!--$`C`$-->)? Please
 provide the transformation with both the rotation and translation components.
 
     > Tip 1: You can use the [tf2_echo](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Tf2-Main.html) tool to query
