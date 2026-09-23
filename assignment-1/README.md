@@ -239,11 +239,11 @@ data as described above. To get started, follow the steps below:
 
 1. Inspect the [generate_target.py](shutter_lookat/scripts/generate_target.py) Python script in the `scripts` directory of the `shutter_lookat` 
 package that is provided as part of this assignment. You should understand how the script creates a 
-simulated moving object and publishes its position relative to the "base_footprint" frame of 
-Shutter through the `/target` topic.
+simulated moving object and publishes its position relative to the `shutter_base_footprint` frame of 
+the robot through the `/target` topic.
 
-2. Visualize the moving target in [RViz2](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Introduction-To-Tf2.html). Before running the launch
-script below, make sure that you are not running any other node in ROS 2.
+2. Visualize the moving target in RViz. Before running the launch
+script below, make sure that you are not running any other node in ROS 2, as this launch script will run not only the `generate_target.py` node but also the MuJoCo simulation and Rviz like in Part I of the assignment.
 
     ```bash
     $ ros2 launch shutter_lookat generate_target.launch.py
@@ -263,21 +263,25 @@ Let's now publish the position of the moving object as a ROS 2 tf2 frame.
 the position of a simulated moving object as a ROS 2 tf2 frame (`target`) relative to the robot's `shutter_camera_color_optical_frame` frame. 
 
     - Create a new ROS 2 node in Python within the `scripts` directory of the `shutter_lookat` package.
-The node should be named `publish_target_relative_to_realsense_camera.py`. The python script should have executable permissions.
+The node should be named `publish_target_relative_to_realsense_camera.py`. The python script should have executable permissions:
+
+    ```bash
+    $ chmod +x <path-to-script>
+    ```
 
     - Within your new node:
     
         - Subscribe to the `/target` topic to receive the position of the
-simulated object relative to the "base_footprint" frame.
+simulated object relative to the `shutter_base_footprint` frame.
 
             > Tip: We suggest that you organize the code of your node
 in a Python class, as in [this tutorial on a ROS 2 node](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Py-Publisher-And-Subscriber.html),
 given the increased complexity of this node in comparison previous examples. For Ubuntu 24.04, make sure to use 
 `#!/usr/bin/env python3` instead of `#!/usr/bin/env python` to define your node as a Python executable, as Ubuntu 24.04 and ROS 2 Jazzy are meant to work with Python 3.
 
-        - Transform the 3D pose of the moving object to the "camera_color_optical_frame" frame in Shutter.
-        For this, you will have to query the transformation between the "base_footprint" frame in which the target pose is provided
-        and the "camera_color_optical_frame" using the `lookup_transform` function from the tf2 API. 
+        - Transform the 3D pose of the moving object to the `shutter_camera_color_optical_frame` frame in the robot.
+        For this, you will have to query the transformation between the `shutter_base_footprint` frame in which the target pose is provided
+        and the `shutter_camera_color_optical_frame` using the `lookup_transform` function from the tf2 API. 
         Make sure to query the transformation at the time when the target pose was computed.
 
             > Tip 1: You can take a look at this ROS 2 tutorial on [writing a tf2 listener](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Writing-A-Tf2-Listener-Py.html)
@@ -286,14 +290,14 @@ given the increased complexity of this node in comparison previous examples. For
             > Tip 2: You can use the [tf2_geometry_msgs](https://index.ros.org/p/tf2_geometry_msgs/) API to transform the pose of the object
             as in [this post](https://answers.ros.org/question/222306/transform-a-pose-to-another-frame-with-tf2-in-python/).
             
-        - Broadcast a tf2 transform between the "camera_color_optical_frame" frame (parent) and a new "target" frame (child) in tf2. 
-        The target frame should match the pose of the simulated object in the camera_color_optical_frame.
+        - Broadcast a tf2 transform between the `shutter_camera_color_optical_frame` frame (parent) and a new `target` frame (child) in tf2. 
+        The target frame should match the pose of the simulated object in the `shutter_camera_color_optical_frame`.
         
             > Tip: An example on broadcasting tf2 transformations can be found in 
             [this tutorial](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Writing-A-Tf2-Broadcaster-Py.html).
         
-    - Close all your nodes in ROS 2, launch the `generate_target.launch.py` script, and run your new node which publishes
-    the `target` frame:
+    - Close all your nodes in ROS 2, build your workspace with `colcon build`, launch the `generate_target.launch.py` script in one terminal, and run your new node which publishes
+    the `target` frame in another terminal:
 
         ```bash
         $ ros2 run shutter_lookat publish_target_relative_to_realsense_camera.py --ros-args -p use_sim_time:=true
