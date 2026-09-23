@@ -102,7 +102,7 @@ $ git pull
 
 # finally, re-build your colcon workspace 
 $ cd <path-to-your-ros2-workspace-root-directory>
-$ colcon build --packages-skip moveit_ros_tests moveit_runtime --cmake-args -DCMAKE_BUILD_TYPE=Release --parallel-workers 2
+$ colcon build --symlink-install --packages-skip moveit_ros_tests moveit_runtime --cmake-args -DCMAKE_BUILD_TYPE=Release --parallel-workers 2
 ```
 
 > Tip: If you cannot find the `shutter-ros2` directory in your workspace's src folder,
@@ -211,9 +211,9 @@ provide the transformation with both the rotation and translation components.
 ## Part II. Publishing tf2 messages
 As mentioned earlier, the [tf2](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Tf2-Main.html) library
 uses a tree structure to represent frames and transformations in ROS 2. These frames and transformations
-are created based on the messages streamed through the /tf and /tf_static topics. 
+are created based on the messages streamed through the `/tf` and `/tf_static` topics. 
 
-By convention, the /tf and /tf_static topics 
+By convention, the `/tf` and `/tf_static` topics 
 transmit messages of the type [tf2_msgs/msg/TFMessage](https://docs.ros2.org/jazzy/api/tf2_msgs/msg/TFMessage.html). In turn, these messages
  contain a list of transformations encoded as 
 [geometry_msgs/msg/TransformStamped](https://docs.ros2.org/jazzy/api/geometry_msgs/msg/TransformStamped.html) messages.
