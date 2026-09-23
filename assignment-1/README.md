@@ -353,7 +353,7 @@ given the increased complexity of this node in comparison previous examples. For
             executor.spin()
         ```
 
-        > A `timeout` of about 0.2 seconds in your `lookup_transform` (or `transform()`) call is likely to suffice: the transform you need is usually only a few milliseconds away.
+        > A `timeout` of about 0.2 seconds in your `lookup_transform` (or `transform()`) call is likely to suffice: the transform you need is usually only a few milliseconds away. 
     
     - Save your work by adding and committing your publish_target_relative_to_realsense_camera.py
     script to your local repository. Push your code to GitHub.
