@@ -199,11 +199,11 @@ Include this image in your report.
     > Tip: You can also generate the image with the 
     [rqt_tf_tree](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Tf2-Main.html) interface if you prefer.
 
-- **I-2.** Based on the tf2 tree from I-1, which frames are between the robot's *base_footprint* 
-frame and the *camera_color_optical_frame* frame?
+- **I-2.** Based on the tf2 tree from I-1, which frames are between the robot's *shutter_base_footprint* 
+frame and the *shutter_camera_color_optical_frame* frame?
 
 - **I-3.** Based on the tf2 tree, what is the ![equation](https://latex.codecogs.com/png.latex?4%20%5Ctimes%204)<!--$`4 \times 4`$--> transformation ![equation](https://latex.codecogs.com/png.latex?%5E%7BC%7D_%7BO%7DT)<!--$`^{C}_{O}T`$-->
-from the *camera_color_optical_frame* frame (![equation](https://latex.codecogs.com/png.latex?O)<!--$`O`$-->) to the *camera_link* frame (![equation](https://latex.codecogs.com/png.latex?C)<!--$`C`$-->)? Please
+from the *shutter_camera_color_optical_frame* frame (![equation](https://latex.codecogs.com/png.latex?O)<!--$`O`$-->) to the *shutter_camera_link* frame (![equation](https://latex.codecogs.com/png.latex?C)<!--$`C`$-->)? Please
 provide the transformation with both the rotation and translation components.
 
     > Tip 1: You can use the [tf2_echo](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Tf2-Main.html) tool to query
@@ -260,8 +260,7 @@ script below, make sure that you are not running any other node in ROS 2.
 Let's now publish the position of the moving object as a ROS 2 tf2 frame.
 
 - **II-1.** Follow the steps below to make a new ROS 2 node that publishes 
-the position of a simulated moving object as a ROS 2 tf2 frame ("target") relative
-to the robot's "camera_color_optical_frame" frame. 
+the position of a simulated moving object as a ROS 2 tf2 frame (`target`) relative to the robot's `shutter_camera_color_optical_frame` frame. 
 
     - Create a new ROS 2 node in Python within the `scripts` directory of the `shutter_lookat` package.
 The node should be named `publish_target_relative_to_realsense_camera.py`. The python script should have executable permissions.
