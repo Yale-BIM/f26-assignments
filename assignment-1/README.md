@@ -317,7 +317,7 @@ given the increased complexity of this node in comparison previous examples. For
       
         If you want to see how the tests are implemented, check the `shutter_lookat_public_tests` package that is 
         provided as part of this assignment. More specifically, the tests for Part II are implemented in 
-        `shutter_lookat_public_tests/test/test_publish_target.py`.
+        [shutter_lookat_public_tests/test/test_publish_target.py](shutter_lookat_public_tests/test/test_publish_target.py).
 
         > Tip: If `test_node_connections` passes but `test_frame_exists` fails with
         `Failed to find a transformation between shutter_base_footprint and target`, scroll up in
