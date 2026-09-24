@@ -661,7 +661,7 @@ Run public tests for Part III of this assignment to ensure that your node is ope
 You will now modify your virtual_camera.py node so that instead of drawing a circle with a fixed radius for the target, 
 it draws the true outline of the spherical target as seen by the camera. 
 
-1. Copy your virtual_camera.py script into a new script called `fancy_virtual_camera.py`. The new script
+1. Copy your `virtual_camera.py` script into a new script called `fancy_virtual_camera.py`. The new script
 should be located within the `shutter_lookat/scripts` directory. It should have executable permissions.
 
 2. Change the name of the new node in the `super().__init__()` function to `fancy_virtual_camera`
