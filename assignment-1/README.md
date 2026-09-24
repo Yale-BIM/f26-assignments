@@ -780,7 +780,7 @@ in your new `fancy_virtual_camera.py` script.
     </kbd>
     </p>
 
-- **IV-6.**  Restart ROS 2 and re-run the generate_target.launch.py with the ball updating at a lower speed, and being closer to the camera:
+- **IV-6.**  Restart ROS 2 and re-run the `generate_target.launch.py` with the ball updating at a lower speed, and being closer to the camera:
     
     ```bash
     $ ros2 launch shutter_lookat generate_target.launch.py target_x_plane:=0.5 publish_rate:=1 # the publish rate for the target is in Hz
@@ -796,5 +796,5 @@ in your new `fancy_virtual_camera.py` script.
 Parts V and VI of the assignment are only for students taking CPSC-5590 (graduate version of the course). See the tasks/questions in the [ExtraQuestions-CPSC559.md](ExtraQuestions-CPSC559.md) document.
 
 **Once you get to the end of the assignment, remember to commit your code, push to GitHub, and indicate
-in your assignment report the commit SHA for the final version of your code. Your code and report should be submitted to 
-Gradescope.**
+in your online report the commit SHA for the final version of your code. Your code and report should be submitted to 
+Gradescope (they are two separate assignments).**
