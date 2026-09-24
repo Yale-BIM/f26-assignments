@@ -32,24 +32,36 @@ class TestDepth(unittest.TestCase):
         self.assertIsInstance(gray_depth, float,
                               "The compute_depth_from_gray_image() function is not returning a float value. Output: {}"
                               .format(gray_depth))
-        self.assertFalse(np.isinf(gray_depth),
-                         "The output of compute_depth_from_gray_image() is not finite. Output: {}"
-                         .format(gray_depth))
+        self.assertTrue(np.isfinite(gray_depth),
+                        "The output of compute_depth_from_gray_image() is not finite. Output: {}"
+                        .format(gray_depth))
 
-        print("Verified that 'compute_depth_from_gray_image' returns non-infinite float")
+        print("Verified that 'compute_depth_from_gray_image' returns a finite float")
 
     def test_depth_image(self):
         """
         Check calculation of depth from depth image
         """
         depth = np.full((480, 640), 0.853, dtype='float64')
-        
+
+        # Zero out part of the selected region. These cells stand for pixels of the gray
+        # image for which the camera could not estimate depth, so they must be filtered
+        # out before averaging (see task VI-3.ii). Every remaining cell of the region
+        # holds the same value, so a correct implementation must return exactly that value.
+        depth[0:30, 0:40] = 0.0
+
         avg_depth = compute_depth_from_depth_image(depth, self.image_coordinates)
         self.assertIsInstance(avg_depth, float,
                               "The compute_depth_from_depth_image() function is not returning a float value. Output: {}"
                               .format(avg_depth))
-        self.assertFalse(np.isinf(avg_depth),
-                         "The output of the compute_depth_from_depth_image() function is not finite. Output: {}"
-                         .format(avg_depth))
+        self.assertTrue(np.isfinite(avg_depth),
+                        "The output of the compute_depth_from_depth_image() function is not finite. Output: {}. "
+                        "Note that averaging an empty set of depth values results in nan."
+                        .format(avg_depth))
+        self.assertAlmostEqual(avg_depth, 0.853, places=6,
+                               msg="The output of the compute_depth_from_depth_image() function is not the average "
+                                   "of the non-zero depth values in the selected region. Expected: 0.853. Output: {}. "
+                                   "Remember to filter out the zero values of the depth image before averaging."
+                                   .format(avg_depth))
 
-        print("Verified that 'compute_depth_from_depth_image' returns non-infinite float")
+        print("Verified that 'compute_depth_from_depth_image' returns a finite float and filters out zero values")
