@@ -489,7 +489,7 @@ a new message from the /target topic is received.
     and visualize the images that your node is publishing using the 
 `ros2 run rqt_image_view rqt_image_view` node, which is one of the many [Rqt plugins](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-RQt.html) that ROS provide, like `rqt_graph` or `rqt_tf_tree`. In `rqt_image_view`, you should see the red circle
 moving in a circular path in the image (as in the Figure below) in the `/virtual_camera/image_raw` topic. If this is not the case, please check your implementation of the
-virtual_camera.py script.
+`virtual_camera.py` script.
 
 <p align="center">
 <kbd>
@@ -499,12 +499,12 @@ virtual_camera.py script.
 
 ### Questions / Tasks
     
-- **III-1.** Edit your virtual_camera.py script to enable your node to also publish 
+- **III-1.** Edit your `virtual_camera.py` script to enable your node to also publish 
  calibration parameters. Sharing the parameters will help other programs 
- reason geometrically about the images that your virtual camera generates. Note that the parameters should be published as a [CameraInfo](https://docs.ros2.org/jazzy/api/sensor_msgs/msg/CameraInfo.html) message through the `/virtual_camera/camera_info` topic, as indicated in the steps below.
+ reason geometrically about the images that your virtual camera generates. Note that the parameters should be published as a [CameraInfo](https://docs.ros.org/en/jazzy/p/sensor_msgs/msg/CameraInfo.html) message through the `/virtual_camera/camera_info` topic, as indicated in the steps below.
 
-    **a.** Import the [CameraInfo](https://docs.ros2.org/jazzy/api/sensor_msgs/msg/CameraInfo.html) message
-    into your virtual_camera.py script.
+    **a.** Import the [CameraInfo](https://docs.ros.org/en/jazzy/p/sensor_msgs/msg/CameraInfo.html) message
+    into your `virtual_camera.py` script.
     
     ```python
     # Example
@@ -542,7 +542,7 @@ virtual_camera.py script.
     ```
     
     > Note: Specific details about the fields of CameraInfo messages can be found 
-     in its [message definition](https://docs.ros2.org/jazzy/api/sensor_msgs/msg/CameraInfo.html).
+     in its [message definition](https://docs.ros.org/en/jazzy/p/sensor_msgs/msg/CameraInfo.html).
     
     **c.** Create a publisher for the CameraInfo messages in your node.
     
@@ -572,20 +572,20 @@ virtual_camera.py script.
     to optimize the operation of your ROS 2 nodes so that the same computation is not repeated over and over unnecessarily is important for real-time systems.
     
     **e.** Finally, check that your node is publishing CameraInfo messages through the 
-    /virtual_camera/camera_info topic with the [ros2 topic echo](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Topics/Understanding-ROS2-Topics.html) tool.
+    `/virtual_camera/camera_info` topic with the [ros2 topic echo](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Topics/Understanding-ROS2-Topics.html#ros2-topic-echo) tool.
 
     > Remember to commit your code whenever you want to save a snapshot of your work. 
 
 - **III-2.** You will now verify that the image and the camera parameters that your node publishes 
-are consistent with one another with the help of the RViz2 [Camera Plugin](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Introduction-To-Tf2.html). 
+are consistent with one another with the help of the RViz `Camera Display`. This display is one of the many native display options that can be used in [RViz](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/RViz/RViz-User-Guide/RViz-User-Guide.html#adding-a-new-display). 
 
-    > The [Camera Plugin](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Introduction-To-Tf2.html) creates a new rendering
-window in RViz2 from the perspective of a camera using the CameraInfo message that your virtual_camera.py node publishes. 
-The plugin also lets you overlay other displays that you have enabled in RViz2 on the rendered image. Your goal is to use these overlays to verify that
+    > The [Camera display](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/RViz/RViz-User-Guide/RViz-User-Guide.html#built-in-display-types:~:text=JointStates-,Camera,it) creates a new rendering
+window in RViz from the perspective of a camera using the camera's CameraInfo message. By default, RViz expects that if the camera images are published a topic called `/camera/image`, then the corresponding camera info message will be published in `/camera/camera_info`. 
+The display also lets you overlay other displays that you have enabled in RViz2 on the rendered image. Your goal is to use these overlays to verify that
 the virtual camera that you already implemented is working correctly. 
 
-    Close all running ROS 2 nodes and re-launch the generate_target.launch.py script. Then run 
-    your virtual_camera.py node and, once RViz2 opens, add a Camera display to the RViz2 window.
+    Close all running ROS 2 nodes and re-launch the `generate_target.launch.py` script. Then run 
+    your `virtual_camera.py` node and, once RViz opens, add a `Camera display` to the RViz window.
     Configure the camera plugin as follows:
     
         Image Topic: /virtual_camera/image_raw
