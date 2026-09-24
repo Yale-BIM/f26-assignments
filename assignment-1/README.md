@@ -580,22 +580,22 @@ moving in a circular path in the image (as in the Figure below) in the `/virtual
 are consistent with one another with the help of the RViz `Camera Display`. This display is one of the many native display options that can be used in [RViz](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/RViz/RViz-User-Guide/RViz-User-Guide.html#adding-a-new-display). 
 
     > The [Camera display](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/RViz/RViz-User-Guide/RViz-User-Guide.html#built-in-display-types:~:text=JointStates-,Camera,it) creates a new rendering
-window in RViz from the perspective of a camera using the camera's CameraInfo message. By default, RViz expects that if the camera images are published a topic called `/camera/image`, then the corresponding camera info message will be published in `/camera/camera_info`. 
-The display also lets you overlay other displays that you have enabled in RViz2 on the rendered image. Your goal is to use these overlays to verify that
+window in RViz from the perspective of a camera using the camera's CameraInfo message. RViz does not let you set the camera info topic directly: it derives the topic from the image topic by replacing the last component of its name with `camera_info`. For example, if the camera images are published in a topic called `/camera/image`, then RViz expects the corresponding camera info message to be published in `/camera/camera_info`. 
+The display also lets you overlay other displays that you have enabled in RViz on the rendered image. Your goal is to use these overlays to verify that
 the virtual camera that you already implemented is working correctly. 
 
     Close all running ROS 2 nodes and re-launch the `generate_target.launch.py` script. Then run 
     your `virtual_camera.py` node and, once RViz opens, add a `Camera display` to the RViz window.
     Configure the camera plugin as follows:
     
-        Image Topic: /virtual_camera/image_raw
+        Topic: /virtual_camera/image_raw
         Image Rendering: background
         Overlay Alpha: 0.6
         Zoom Factor: 1
 
-    The red circle from your /virtual_camera/image_raw image should then align in the RViz2 
-    Camera plugin with the red ball of the simulated moving object (as in the Figure below). 
-    If this is not the case, check and correct your implementation of the virtual_camera.py node.
+    The red circle from your `/virtual_camera/image_raw` image should then align in the RViz 
+    Camera display with the red ball of the simulated moving object (as in the Figure below). 
+    If this is not the case, check and correct your implementation of the `virtual_camera.py` node.
        
     <p align="center">
     <kbd>
@@ -603,18 +603,21 @@ the virtual camera that you already implemented is working correctly.
     </kbd>
     </p>
 
-    > Tip: If parts of the robot are displayed in the camera plugin image, then you can remove them by temporarily disabling the RobotModel plugin in Rviz2.
+    > Tip: If parts of the robot are displayed in the camera plugin image, then you can remove them by temporarily disabling the `RobotModel display` in Rviz.
     
-    Once the image that is published by the virtual_camera.py script is consistent 
-    with what the Camera plugin shows in RViz2, record a ROS 2 [bag](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Recording-And-Playing-Back-Data/Recording-And-Playing-Back-Data.html) 
+    Once the image that is published by the `virtual_camera.py` script is consistent 
+    with what the Camera plugin shows in RViz, record a ROS 2 `bag` -- a log of the system -- in MCAP format 
     as in [this tutorial](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Recording-And-Playing-Back-Data/Recording-And-Playing-Back-Data.html). 
     The bag should have all of the messages that are streamed in your system for a duration of 8 seconds.
     
     ```bash
-    $ timeout 8 ros2 bag record -o <your-name>_a1p3-2.bag -a
+    $ timeout 8 ros2 bag record -o <your-name>_a1p3-2 -a
     ```
     
-    > You can see a description of the arguments that `ros2 bag record` accepts [here](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Recording-And-Playing-Back-Data/Recording-And-Playing-Back-Data.html). Make sure to start the generate_target.launch.py file and your virtual camera before starting to record the bag, or the bag might end up being empty!
+    > Tip: Make sure to start the `generate_target.launch.py` script and your virtual camera before starting to record the bag, or the bag might end up being empty!
+
+    The `ros2 bag record` tool will create a folder called `<your-name>_a1p3-2` when you provide the `-o <your-name>_a1p3-2` argument and save data from all (`-a`) topics that it detects. You can see a more complete description of the arguments that `ros2 bag record` accepts [here](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Recording-And-Playing-Back-Data/Recording-And-Playing-Back-Data.html) as well as read more details about this tool in the [rosbag2 repository](https://github.com/ros2/rosbag2/tree/jazzy). 
+
     
     Inspect your ROS 2 bag with the [ros2 bag info](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Recording-And-Playing-Back-Data/Recording-And-Playing-Back-Data.html) tool to verify that it contains messages
     for all of the following topics:
@@ -628,8 +631,8 @@ the virtual camera that you already implemented is working correctly.
         * /virtual_camera/camera_info    
         * /virtual_camera/image_raw 
     
-    Upload your ROS 2 bag to Google Drive or Box and <u>make it accessible to anybody with the link</u>. Then, 
-    **provide a link to your ROS 2 bag in your report** for this assignment. You don't need to and 
+    Upload your ROS 2 bag (the folder that was created with an .mcap file and a yaml file) to Google Drive and <u>make the folder accessible to anybody with the link</u>. Then, 
+    **provide the link to your ROS 2 bag in your online report** for this assignment. You don't need to and 
     you shouldn't commit the bag to your repository! Otherwise, you will make your repository
     unnecessarily heavy.
 
