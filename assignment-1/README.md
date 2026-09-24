@@ -387,7 +387,7 @@ Assume that the moving object from Part II of this assignment is a sphere. Now, 
 work on projecting the simulated object on a virtual image captured from Shutter. Close all ROS 2 nodes before
 starting this part of the assignment.
 
-0. Install OpenCV and [cv_bridge](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Cv-Bridge/Cv-Bridge-Python.html) in Ubuntu 24.04 if they are not already installed: `sudo apt install ros-jazzy-cv-bridge` 
+0. Install OpenCV and [cv_bridge](https://index.ros.org/p/cv_bridge/) in Ubuntu 24.04 if they are not already installed: `sudo apt install ros-jazzy-cv-bridge` 
 
     > The `ros-jazzy-cv-bridge` dependency should already installed in the bim laptops and the zoo machines, so you can skip this step if you are working on those computers.
 
@@ -452,29 +452,43 @@ based on the following parameters:
 5. Edit the `target_callback()` function in the `virtual_camera.py` node such that it repeats the steps below every time 
 a new message from the /target topic is received. 
 
-    **a.** Compute the target's pose in the `shutter_camera_color_optical_frame` frame (as in Part II of this assignment).
+    **a.** Computes the target's pose in the `shutter_camera_color_optical_frame` frame (as in Part II of this assignment).
 
-    **b.** Call the `draw_image()` function to create a virtual camera image that shows the projected location of the target
+    **b.** Calls the `draw_image()` function to create a virtual camera image that shows the projected location of the target
     as a circle. The resulting image should have dimensions of 640 x 480 pixels.
    
     **c.** Publishes the image that you created with OpenCV as a [sensor_msgs/msg/Image](https://docs.ros.org/en/jazzy/p/sensor_msgs/msg/Image.html) message in ROS 2. You
-    can use the [cv_bridge](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Cv-Bridge/Cv-Bridge-Python.html) library to convert the OpenCV image to
+    can use the [cv_bridge](https://github.com/ros-perception/vision_opencv/tree/rolling) library to convert the OpenCV image to
     an Image message. Note that the Image message should have a `header` with the current time as
     `stamp` and the `shutter_camera_color_optical_frame` frame as `frame_id`. The Image message should be published by your node
     through the `/virtual_camera/image_raw` topic.
     
-    > Tip: Examples on converting OpenCV images to ROS 2 messages can be found
-    in [this tutorial](https://github.com/ros-perception/image_transport_tutorials#py_simple_image_pub).
+    > Tip: `cv_bridge` converts an OpenCV image (a NumPy array) into a
+    [sensor_msgs/msg/Image](https://docs.ros.org/en/jazzy/p/sensor_msgs/msg/Image.html) message, as in the example below.
+    See the [`cv2_to_imgmsg()` docstring](https://github.com/ros-perception/vision_opencv/blob/rolling/cv_bridge/python/cv_bridge/core.py#L239) for the available encodings, and the
+    [Python publisher tutorial](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Py-Publisher-And-Subscriber.html)
+    for the publisher boilerplate. 
+
+    ```python
+    from cv_bridge import CvBridge
+    ...
+    self.bridge = CvBridge()                                      # in __init__()
+    ...
+    msg = self.bridge.cv2_to_imgmsg(cv_image, encoding="bgr8")    # cv_image is the OpenCV image from draw_image()
+    msg.header.stamp = self.get_clock().now().to_msg()
+    msg.header.frame_id = "shutter_camera_color_optical_frame"
+    self.image_pub.publish(msg)
+    ```
     
-6. Launch the `generate_target.launch.py` script again, run your node:
+6. Launch the `generate_target.launch.py` script again to start a simulation of the robot, Rviz and so on. Then, run your node in another terminal:
 
     ```bash
     $ ros2 run shutter_lookat virtual_camera.py --ros-args -p use_sim_time:=true
     ```
 
     and visualize the images that your node is publishing using the 
-[ros2 run rqt_image_view rqt_image_view](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Topics/Understanding-ROS2-Topics.html) tool. You should see the red circle
-moving in a circular path in the image (as in the Figure below). If this is not the case, please check your implementation of the
+`ros2 run rqt_image_view rqt_image_view` node, which is one of the many [Rqt plugins](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-RQt.html) that ROS provide, like `rqt_graph` or `rqt_tf_tree`. In `rqt_image_view`, you should see the red circle
+moving in a circular path in the image (as in the Figure below) in the `/virtual_camera/image_raw` topic. If this is not the case, please check your implementation of the
 virtual_camera.py script.
 
 <p align="center">
