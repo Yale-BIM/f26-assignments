@@ -323,7 +323,7 @@ given the increased complexity of this node in comparison previous examples. For
         `Failed to find a transformation between shutter_base_footprint and target`, scroll up in
         the test output to the messages that your own `publish_target_relative_to_realsense_camera.py`
         node printed. If you see `Lookup would require extrapolation into the future` repeating
-        once per target message, your transform math is probably fine; a likely problem is that
+        once per target message, your transform math is probably fine; a more likely problem is that
         `publish_target_relative_to_realsense_camera.py` executes its callbacks sequentially.
         >
         > The `TransformListener` that you created subscribes to `/tf` on your node's behalf.
@@ -365,13 +365,13 @@ given the increased complexity of this node in comparison previous examples. For
             rclpy.shutdown()
         ```
 
-        > One last detail: the `timeout` argument of `lookup_transform` and `transform()` must be
+        > One last detail: you may need to adjust the `timeout` argument of `lookup_transform` and `transform()`. This argument must be
         an `rclpy.duration.Duration` object, not a plain number. Import it with
         `from rclpy.duration import Duration` and pass, for example,
         `timeout=Duration(seconds=0.2)`. Waiting that long is likely to suffice, since the
         transform that you need is usually only a few milliseconds away.
     
-    - Save your work by adding and committing your publish_target_relative_to_realsense_camera.py
+    - Save your work by adding and committing your `publish_target_relative_to_realsense_camera.py`
     script to your local repository. Push your code to GitHub.
      
         > Remember that continously committing your work and pushing to GitHub will ensure that your
@@ -387,10 +387,11 @@ Assume that the moving object from Part II of this assignment is a sphere. Now, 
 work on projecting the simulated object on a virtual image captured from Shutter. Close all ROS 2 nodes before
 starting this part of the assignment.
 
-0. Install OpenCV and [cv_bridge](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Cv-Bridge/Cv-Bridge-Python.html) in Ubuntu 24.04 if they are not already installed: `sudo apt install ros-jazzy-cv-bridge`
+0. Install OpenCV and [cv_bridge](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Cv-Bridge/Cv-Bridge-Python.html) in Ubuntu 24.04 if they are not already installed: `sudo apt install ros-jazzy-cv-bridge` 
 
-1. Inspect the `virtual_camera.py` node that is provided as part of this assignment within the `shutter_lookat/scripts`
-directory.  
+    > The `ros-jazzy-cv-bridge` dependency should already installed in the bim laptops and the zoo machines, so you can skip this step if you are working on those computers.
+
+1. Inspect the `virtual_camera.py` node that is provided as part of this assignment within the `shutter_lookat/scripts` directory.  
 
 2. Complete the `project_3D_point()` function at the top of the script. This function receives the coordinates of a 
 3D point with coordinates x, y, z in the camera frame and computes the projected location for this point onto the image
@@ -451,7 +452,7 @@ based on the following parameters:
 5. Edit the `target_callback()` function in the `virtual_camera.py` node such that it repeats the steps below every time 
 a new message from the /target topic is received. 
 
-    **a.** Compute the target's pose in the "camera_color_optical_frame" frame (as in Part II of this assignment).
+    **a.** Compute the target's pose in the `shutter_camera_color_optical_frame` frame (as in Part II of this assignment).
 
     **b.** Call the `draw_image()` function to create a virtual camera image that shows the projected location of the target
     as a circle. The resulting image should have dimensions of 640 x 480 pixels.
@@ -459,7 +460,7 @@ a new message from the /target topic is received.
     **c.** Publishes the image that you created with OpenCV as a [sensor_msgs/msg/Image](https://docs.ros2.org/jazzy/api/sensor_msgs/msg/Image.html) message in ROS 2. You
     can use the [cv_bridge](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Cv-Bridge/Cv-Bridge-Python.html) library to convert the OpenCV image to
     an Image message. Note that the Image message should have a `header` with the current time as
-    `stamp` and the "camera_color_optical_frame" frame as `frame_id`. The Image message should be published by your node
+    `stamp` and the `shutter_camera_color_optical_frame` frame as `frame_id`. The Image message should be published by your node
     through the `/virtual_camera/image_raw` topic.
     
     > Tip: Examples on converting OpenCV images to ROS 2 messages can be found
@@ -620,15 +621,19 @@ the virtual camera that you already implemented is working correctly.
 
 - **III-3.** Explain in your report what happens with the projection of the target on the image
 when the target is behind the camera? How and why is the image changed? To visualize this result, you can launch the `generate_target.launch.py` script with the optional parameter `target_x_plane:=<x>`, where \<x\> corresponds to the target's
-x coordinate on the robot's "base_footprint" frame. Then inspect the images that your node generates.
+x coordinate on the robot's `shutter_base_footprint` frame. Then inspect the images that your node generates.
 
 - **III-4.** Your virtual camera could see behind it, but real cameras don't do that. Modify the `draw_image()` function in the virtual_camera.py node so that the part of your code that computes the projection of the target and draws the circle only executes if the target is in front of the camera. That is, these parts of your program should only execute if the Z component of the target's position in the camera coordinate frame is positive. If the Z component is zero or negative, the function should instead return an empty (white) image. In the latter case, the function should also print a warning message:
 
     ```python
-    # example warning
-    self.get_logger().warn("Warning: Target is behind the camera (z={})".format(z)) # z is the z coordinate for the target's center point relative to the camera frame
+    # example warning (add "import rclpy.logging" at the top of your script)
+    rclpy.logging.get_logger("virtual_camera").warn("Warning: Target is behind the camera (z={})".format(z)) # z is the z coordinate for the target's center point relative to the camera frame
     ```
-    
+
+    > Note: `rclpy.logging.get_logger()` returns a ROS logger without needing a node. Import it explicitly with `import rclpy.logging`: a plain `import rclpy`
+    does not make the `rclpy.logging` submodule available. Also keep `draw_image()` at the top level of the
+    script -- the public tests import it directly with `from virtual_camera import draw_image`.
+
 Run public tests for Part III of this assignment to ensure that your node is operating as expected:
 
  ```bash

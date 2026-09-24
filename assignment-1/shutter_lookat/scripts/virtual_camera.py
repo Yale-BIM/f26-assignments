@@ -61,9 +61,8 @@ class VirtualCameraNode(Node):
         :param target_msg: target message
         """
 
-        # Convert target message to "camera_color_optical_frame" frame to get the target's x,y,z coordinates
-        # relative to the camera...
-
+        # Convert the target message to the "shutter_camera_color_optical_frame" frame to get the
+        # target's x,y,z coordinates relative to the camera. 
 
         # Draw the camera image. Use the draw_image(x, y, z, K, width, height) function to this end....
 
