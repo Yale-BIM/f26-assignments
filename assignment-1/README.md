@@ -793,7 +793,7 @@ in your new `fancy_virtual_camera.py` script.
 
 ## Parts V and VI
 
-Parts V and VI of the assignment are only for students taking CPSC-5590 (graduate version of the course). See the tasks/questions in the [ExtraQuestions-CPSC559.md](ExtraQuestions-CPSC559.md) document.
+Parts V and VI of the assignment are only for students taking CPSC-5590 (graduate version of the course). See the tasks/questions in the [ExtraQuestions-CPSC5590.md](ExtraQuestions-CPSC5590.md) document.
 
 **Once you get to the end of the assignment, remember to commit your code, push to GitHub, and indicate
 in your online report the commit SHA for the final version of your code. Your code and report should be submitted to 
