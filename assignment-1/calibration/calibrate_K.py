@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-# Complete this script with your solution to Part V of Assignment 2
+# Complete this script with your solution to Part V of Assignment 1
 import sys
 import numpy as np
 
 def compute_K(data_file):
     """
-    Solve Assignment 3 - Part V
+    Solve Assignment 1 - Part V
     :param data_file: path to file with 3D-2D point correspondences (correspondences.txt)
     :return: K as a 3x3 numpy array, error
     """
