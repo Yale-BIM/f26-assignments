@@ -106,18 +106,26 @@ in your home directory. To do this, follow steps 1-2 in this tutorial:
     ```bash
     # Build your workspace
     $ cd ~/ros2_ws
-    $ colcon build --packages-skip moveit_ros_tests moveit_runtime --cmake-args -DCMAKE_BUILD_TYPE=Release --parallel-workers 2
+    $ colcon build --symlink-install --packages-skip moveit_ros_tests moveit_runtime --cmake-args -DCMAKE_BUILD_TYPE=Release --parallel-workers 2
     ```
 
     (again, be patient...)
 
-    > When running commands on a terminal, pay attention to the information that is printed in the terminal. If you see any errors, please post them in Ed discussion and/or communicate with the course staff. 
 
     Now you should have an install space in `~/ros2_ws/install`, which contains its own `setup.bash` file.
     Sourcing this file will `overlay` the install space onto your environment. Overlaying refers to building and using a ROS 2 package from source on top of an existing version of that same package (e.g., installed at the system level in /opt/ros/jazzy). For more information on overlaying, read [this tutorial](https://docs.ros.org/en/eloquent/Tutorials/Workspace/Creating-A-Workspace.html#:~:text=You%20also%20have,its%20parent%20underlays.).
 
     > Note that the `colcon build` command generated a `build` directory when it compiled the code in your `src` folder. This `build` directory has intermediary build files needed during the compilation process to generate the executables and libraries in the `install` folder. 
     If you ever need to, you can delete the `build` and `install` folders and re-run `colcon build` within `ros2_ws` to recompile everything from scratch.
+
+    > About `--symlink-install`: by default, `colcon build` *copies* files like Python scripts, launch files, and configuration files from your `src` folder into the `install` folder. That means every time you edit one of those files, you have to re-run `colcon build` before ROS 2 sees your change. With `--symlink-install`, colcon creates a [symbolic link](https://en.wikipedia.org/wiki/Symbolic_link) in `install` that points back at the original file in `src` instead of copying it. Your edits then take effect immediately -- you can change a Python node, save, and re-run it with `ros2 run` without rebuilding. This will save you a lot of time in the assignments.
+    >
+    > Two caveats. First, because the installed file is just a link to your source file, the *source* file must have executable permissions for `ros2 run` to be able to run it. Whenever you create a new Python node, remember to run `chmod +x <your-script>.py` on it. Second, symlinks only help for files that are used as-is (Python scripts, launch files, configs). Anything that has to be compiled or generated -- C++ code, or the Python bindings for a custom message type -- still requires a `colcon build`. Creating a brand new script also requires one rebuild, so that colcon can create the link for it.
+    >
+    > Use the same `colcon build` command (with `--symlink-install`) every time you rebuild your workspace. If you build once with the flag and once without it, you will end up with a mix of links and stale copies in your `install` folder, and it will not be obvious which version of your code is actually running. In that case, delete the `install`, `build` and `log` folders within your workspace, and run again `colcon build`.
+
+
+
 
 4. Configure your bash environment. First, add ```source /opt/ros/jazzy/setup.bash``` and ```source ~/ros2_ws/install/setup.bash``` at the end of your `.bashrc` file to automatically set up your environment with your workspace every time you open a new shell. Otherwise, make sure to source ~/ros2_ws/install/setup.bash on every new shell that you want to use to work with ROS 2. Sourcing setup.bash from your install space will ensure that ROS 2 can work properly with the code that you've added to and built in ~/ros2_ws. 
 
@@ -154,6 +162,8 @@ with [ros2 launch](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/La
     
     The [shutter_mujoco.launch.py](shutter_mujoco_sim/launch/shutter_mujoco.launch.py) script in turn runs [simple_face.launch.py](shutter_face_ros/launch/simple_face.launch.py) to begin face rendering for the robot. Also, it runs [shutter_control.launch.py](https://gitlab.com/interactive-machines/shutter/shutter-ros2/-/blob/bim/shutter_hardware_interface/launch/shutter_control.launch.py?ref_type=heads) to bring up the [ros2_control stack](https://control.ros.org/rolling/index.html) on the robot as well as publish a model of the robot and its current state (i.e., the position of its servos).
     
+    > When running commands on a terminal, pay attention to the information that is printed in the terminal. If you see any errors, please post them in Ed discussion and/or communicate with the course staff. 
+
     The description of the robot is in [URDF format](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/URDF/URDF-Main.html). In particular, the URDF model has information about the the joints of the robot and its sensors, including specific properties and relative placement.
 
     > The robot description is published through the `/robot_description` topic. You can see the information being sent through this topic using the `ros2 topic echo --once /robot_description` in a terminal.

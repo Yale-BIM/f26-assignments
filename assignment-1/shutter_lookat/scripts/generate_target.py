@@ -15,7 +15,7 @@ class SimulatedObject(object):
     The path is contained in a plane parallel to the y-z plane (i.e., x is constant for all points in the path).
     """
 
-    def __init__(self):
+    def __init__(self, arm_id = "shutter"):
         """
         Constructor
         """
@@ -24,7 +24,10 @@ class SimulatedObject(object):
         self.center_z = 0.50            # z coordinate for the center of the object's path
         self.angle = 0.0                # current angle for the object in its circular path (relative to the y axis)
         self.radius = 0.1               # radius of the object's circular path
-        self.frame = "base_footprint"   # frame in which the coordinates of the object are computed
+        # Frame in which the coordinates of the object are computed. Every frame in
+        # Shutter's URDF is prefixed with the robot's arm_id (e.g. "shutter_base_footprint"),
+        # so this is set from the arm_id parameter in GenerateTargetNode below.
+        self.frame = arm_id + "_base_footprint"
 
     def step(self):
         """
@@ -42,20 +45,27 @@ class GenerateTargetNode(Node):
     def __init__(self):
         super().__init__('generate_target')
         
-        # Create the simulated object
-        self.object = SimulatedObject()
 
         # Get ROS parameters
         self.declare_parameter('x_value', 1.5)
         self.declare_parameter('radius', 0.1)
         self.declare_parameter('publish_rate', 30)
-        
+        # Robot id. All of Shutter's links and frames are named ${arm_id}_<name>,
+        # so the target has to be published in ${arm_id}_base_footprint for RViz
+        # and tf2 to be able to place it relative to the robot.
+        self.declare_parameter('arm_id', 'shutter')
+
         x_value = self.get_parameter('x_value').get_parameter_value().double_value
         radius = self.get_parameter('radius').get_parameter_value().double_value
         publish_rate = self.get_parameter('publish_rate').get_parameter_value().integer_value
+        arm_id = self.get_parameter('arm_id').get_parameter_value().string_value
+
+        # Create the simulated object
+        self.object = SimulatedObject(arm_id=arm_id)
         
         self.object.x = x_value
         self.object.radius = radius
+        self.object.frame = arm_id + "_base_footprint"
         self.timestamp_buffer = None
         
         # Define publishers
@@ -65,7 +75,8 @@ class GenerateTargetNode(Node):
         # Create timer for publishing
         self.timer = self.create_timer(1.0 / publish_rate, self.publish_target)
         
-        self.get_logger().info('Generate target node initialized')
+        self.get_logger().info(
+            f'Generate target node initialized (publishing in frame {self.object.frame})')
 
     def publish_target(self):
         """

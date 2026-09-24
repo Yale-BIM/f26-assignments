@@ -102,7 +102,7 @@ $ git pull
 
 # finally, re-build your colcon workspace 
 $ cd <path-to-your-ros2-workspace-root-directory>
-$ colcon build --packages-skip moveit_ros_tests moveit_runtime --cmake-args -DCMAKE_BUILD_TYPE=Release --parallel-workers 2
+$ colcon build --symlink-install --packages-skip moveit_ros_tests moveit_runtime --cmake-args -DCMAKE_BUILD_TYPE=Release --parallel-workers 2
 ```
 
 > Tip: If you cannot find the `shutter-ros2` directory in your workspace's src folder,
@@ -130,6 +130,11 @@ it refers to the second version of the tf package. This is the standard transfor
     That launch files runs `ros2 launch shutter_bringup shutter_sim.launch.py face:=true` to bring up MuJoCo and robot control nodes, and Rviz 2 (hereafter just RViz) with `--ros-args -p use_sim_time:=true` so that the time that it uses is driven by MuJoCo's clock. You should then see:
 
     <img src="../images/shutter_links.png"/>
+
+
+    > As mentioned earlier, [ros2 launch](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Launch/Creating-Launch-Files.html) is a tool for easily launching multiple
+    ROS 2 nodes. A `ros2 launch` script can be written in Python, XML or YAML format, according to [this specification](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Launch/Creating-Launch-Files.html).
+
 
 3. Change the `Fixed Frame` to `shutter_base_link` in RViz's Global Options panel. This will ensure
 that the robot's model is shown straight up in the middle of the 3D visualization area of RViz.
@@ -181,6 +186,9 @@ that the robot's model is shown straight up in the middle of the 3D visualizatio
 
     Thus, for example, in the snippet above, the first joint (`joint_1`) in the base of the robot has a position close to zero radians. This makes the robot look forward.
 
+7. Test enabling and disabling the `TF` display in RViz. This will make the robot's coordinate frames appear and dissapear. 
+
+    > RViz gives you a convenient way to visualize the kinematic structure of the robot via the `TF` and `RobotModel` plugins. They complement  programmatic ways of accessing the `tf` information, which you'll explore next.
 
 ### Questions / Tasks
 Now you will inspect the robot's tf2 tree with tf2 tools. 
@@ -203,7 +211,7 @@ provide the transformation with both the rotation and translation components.
     from these values. We recommend [this primer](http://wiki.ogre3d.org/Quaternion+and+Rotation+Primer) from Ogre
     if you are confused about different rotation representations.
 
-    > Tip 2: We recommend that you visualize the frames of interest in RViz2 to ensure that the transformation that
+    > Tip 2: We recommend that you visualize the frames of interest in RViz to ensure that the transformation that
     you are computing is in the right direction. Note that 
     ![equation](https://latex.codecogs.com/png.latex?%5E%7BC%7D_%7BO%7DT) is not the same as
     ![equation](https://latex.codecogs.com/png.latex?%5E%7BO%7D_%7BC%7DT).
@@ -211,9 +219,9 @@ provide the transformation with both the rotation and translation components.
 ## Part II. Publishing tf2 messages
 As mentioned earlier, the [tf2](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Tf2-Main.html) library
 uses a tree structure to represent frames and transformations in ROS 2. These frames and transformations
-are created based on the messages streamed through the /tf and /tf_static topics. 
+are created based on the messages streamed through the `/tf` and `/tf_static` topics. 
 
-By convention, the /tf and /tf_static topics 
+By convention, the `/tf` and `/tf_static` topics 
 transmit messages of the type [tf2_msgs/msg/TFMessage](https://docs.ros2.org/jazzy/api/tf2_msgs/msg/TFMessage.html). In turn, these messages
  contain a list of transformations encoded as 
 [geometry_msgs/msg/TransformStamped](https://docs.ros2.org/jazzy/api/geometry_msgs/msg/TransformStamped.html) messages.
@@ -229,13 +237,13 @@ with the translation and rotation of the transform ![equation](https://latex.cod
 You will use code that is already provided in this assignment to learn how to publish tf2
 data as described above. To get started, follow the steps below:
 
-1. Inspect the `generate_target.py` Python script in the `scripts` directory of the `shutter_lookat` 
+1. Inspect the [generate_target.py](shutter_lookat/scripts/generate_target.py) Python script in the `scripts` directory of the `shutter_lookat` 
 package that is provided as part of this assignment. You should understand how the script creates a 
-simulated moving object and publishes its position relative to the "base_footprint" frame of 
-Shutter through the `/target` topic.
+simulated moving object and publishes its position relative to the `shutter_base_footprint` frame of 
+the robot through the `/target` topic.
 
-2. Visualize the moving target in [RViz2](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Introduction-To-Tf2.html). Before running the launch
-script below, make sure that you are not running any other node in ROS 2.
+2. Visualize the moving target in RViz. Before running the launch
+script below, make sure that you are not running any other node in ROS 2, as this launch script will run not only the `generate_target.py` node but also the MuJoCo simulation and Rviz like in Part I of the assignment.
 
     ```bash
     $ ros2 launch shutter_lookat generate_target.launch.py
@@ -246,34 +254,34 @@ script below, make sure that you are not running any other node in ROS 2.
     
     <img src="docs/shutter_target.png"/>    
     
-    > [Ros2 launch](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Launch/Creating-Launch-Files.html) is a tool for easily launching multiple
-    ROS 2 nodes. Ros2 launch scripts are written in Python format, according to [this specification](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Launch/Creating-Launch-Files.html).
-
    
 
 ### Questions / Tasks
 Let's now publish the position of the moving object as a ROS 2 tf2 frame.
 
 - **II-1.** Follow the steps below to make a new ROS 2 node that publishes 
-the position of a simulated moving object as a ROS 2 tf2 frame ("target") relative
-to the robot's "camera_color_optical_frame" frame. 
+the position of a simulated moving object as a ROS 2 tf2 frame (`target`) relative to the robot's `shutter_camera_color_optical_frame` frame. 
 
     - Create a new ROS 2 node in Python within the `scripts` directory of the `shutter_lookat` package.
-The node should be named `publish_target_relative_to_realsense_camera.py`. The python script should have executable permissions.
+The node should be named `publish_target_relative_to_realsense_camera.py`. The python script should have executable permissions:
+
+    ```bash
+    $ chmod +x <path-to-script>
+    ```
 
     - Within your new node:
     
         - Subscribe to the `/target` topic to receive the position of the
-simulated object relative to the "base_footprint" frame.
+simulated object relative to the `shutter_base_footprint` frame.
 
             > Tip: We suggest that you organize the code of your node
 in a Python class, as in [this tutorial on a ROS 2 node](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Py-Publisher-And-Subscriber.html),
 given the increased complexity of this node in comparison previous examples. For Ubuntu 24.04, make sure to use 
 `#!/usr/bin/env python3` instead of `#!/usr/bin/env python` to define your node as a Python executable, as Ubuntu 24.04 and ROS 2 Jazzy are meant to work with Python 3.
 
-        - Transform the 3D pose of the moving object to the "camera_color_optical_frame" frame in Shutter.
-        For this, you will have to query the transformation between the "base_footprint" frame in which the target pose is provided
-        and the "camera_color_optical_frame" using the `lookup_transform` function from the tf2 API. 
+        - Transform the 3D pose of the moving object to the `shutter_camera_color_optical_frame` frame in the robot.
+        For this, you will have to query the transformation between the `shutter_base_footprint` frame in which the target pose is provided
+        and the `shutter_camera_color_optical_frame` using the `lookup_transform` function from the tf2 API. 
         Make sure to query the transformation at the time when the target pose was computed.
 
             > Tip 1: You can take a look at this ROS 2 tutorial on [writing a tf2 listener](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Writing-A-Tf2-Listener-Py.html)
@@ -282,14 +290,14 @@ given the increased complexity of this node in comparison previous examples. For
             > Tip 2: You can use the [tf2_geometry_msgs](https://index.ros.org/p/tf2_geometry_msgs/) API to transform the pose of the object
             as in [this post](https://answers.ros.org/question/222306/transform-a-pose-to-another-frame-with-tf2-in-python/).
             
-        - Broadcast a tf2 transform between the "camera_color_optical_frame" frame (parent) and a new "target" frame (child) in tf2. 
-        The target frame should match the pose of the simulated object in the camera_color_optical_frame.
+        - Broadcast a tf2 transform between the `shutter_camera_color_optical_frame` frame (parent) and a new `target` frame (child) in tf2. 
+        The target frame should match the pose of the simulated object in the `shutter_camera_color_optical_frame`.
         
             > Tip: An example on broadcasting tf2 transformations can be found in 
             [this tutorial](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Writing-A-Tf2-Broadcaster-Py.html).
         
-    - Close all your nodes in ROS 2, launch the `generate_target.launch.py` script, and run your new node which publishes
-    the `target` frame:
+    - Close all your nodes in ROS 2, build your workspace with `colcon build`, launch the `generate_target.launch.py` script in one terminal, and run your new node which publishes
+    the `target` frame in another terminal:
 
         ```bash
         $ ros2 run shutter_lookat publish_target_relative_to_realsense_camera.py --ros-args -p use_sim_time:=true
@@ -299,7 +307,9 @@ given the increased complexity of this node in comparison previous examples. For
     visually matches the position of the moving target (red ball). If the frame and the moving
     object are not displayed in the same place, check your code and edit as necessary.
     
-    - Run public tests for this part of this assignment to ensure that your node is operating as expected:
+    - Close all the ROS 2 nodes that you are running, including the `generate_target.launch.py`
+    script and your node from the previous step. Then run public tests for this part of this
+    assignment to ensure that your node is operating as expected:
     
         ```bash
         $ colcon test --packages-select shutter_lookat_public_tests --event-handlers console_direct+ --ctest-args -R test_publish_target
@@ -307,7 +317,59 @@ given the increased complexity of this node in comparison previous examples. For
       
         If you want to see how the tests are implemented, check the `shutter_lookat_public_tests` package that is 
         provided as part of this assignment. More specifically, the tests for Part II are implemented in 
-        `shutter_lookat_public_tests/test/test_publish_target.py`.
+        [shutter_lookat_public_tests/test/test_publish_target.py](shutter_lookat_public_tests/test/test_publish_target.py).
+
+        > Tip: If `test_node_connections` passes but `test_frame_exists` fails with
+        `Failed to find a transformation between shutter_base_footprint and target`, scroll up in
+        the test output to the messages that your own `publish_target_relative_to_realsense_camera.py`
+        node printed. If you see `Lookup would require extrapolation into the future` repeating
+        once per target message, your transform math is probably fine; a likely problem is that
+        `publish_target_relative_to_realsense_camera.py` executes its callbacks sequentially.
+        >
+        > The `TransformListener` that you created subscribes to `/tf` on your node's behalf.
+        Every transform that reaches your `tf2_ros.Buffer` arrives through that subscription, in a
+        callback that you never wrote.
+        >
+        > Now think about what happens when a `/target` message arrives. The target pose is
+        stamped a few milliseconds *after* the newest transform that your buffer has received, so
+        at the moment your callback runs, the transform for that exact timestamp is not in the
+        buffer yet. This is why `lookup_transform` and the `tf2_geometry_msgs` `transform()`
+        function take a `timeout` argument: instead of failing right away, they wait a little for
+        the missing transform to arrive.
+        >
+        > But if your `publish_target_relative_to_realsense_camera.py`
+        node uses `rclpy.spin()`, which runs the node with a
+        [`SingleThreadedExecutor`](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Executors.html)
+        by default, then every callback runs on one thread, one at a time. That is, while your `/target`
+        callback is waiting out that timeout, it is holding the only thread that can deliver
+        `/tf` messages into your buffer. The buffer never catches up, so the wait always ends in
+        the error above.
+        >
+        > Letting the callbacks of `publish_target_relative_to_realsense_camera.py` run in
+        parallel should fix this. In the `main()` function of that script, spin your node with a
+        [MultiThreadedExecutor](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Executors.html)
+        instead of `rclpy.spin()`, so that the `/tf` callbacks can keep filling the buffer while
+        your `/target` callback waits:
+
+        ```python
+        # Example: in publish_target_relative_to_realsense_camera.py
+        from rclpy.executors import MultiThreadedExecutor
+
+        def main():
+            rclpy.init()
+            node = PublishTargetRelativeToRealsenseCamera()  # your node class
+            executor = MultiThreadedExecutor()
+            executor.add_node(node)
+            executor.spin()
+            node.destroy_node()
+            rclpy.shutdown()
+        ```
+
+        > One last detail: the `timeout` argument of `lookup_transform` and `transform()` must be
+        an `rclpy.duration.Duration` object, not a plain number. Import it with
+        `from rclpy.duration import Duration` and pass, for example,
+        `timeout=Duration(seconds=0.2)`. Waiting that long is likely to suffice, since the
+        transform that you need is usually only a few milliseconds away.
     
     - Save your work by adding and committing your publish_target_relative_to_realsense_camera.py
     script to your local repository. Push your code to GitHub.
