@@ -117,14 +117,14 @@ parameters (![equation](https://latex.codecogs.com/png.latex?K)<!--$`K`$-->) of 
 
     > Tip: We recommend that you draw the geometric relations of the known and unknown variables for this problem. Include this drawing in your report to help explain your answer to this question. 
 
-- **VI-2.** Modify the `depth/process_images.py` script to implement your solution to the task VI-1. To this end, first 
+- **VI-2.** Modify the [depth/process_images.py](depth/process_images.py) script to implement your solution to the task VI-1. To this end, first 
 add an additional input argument to the script for gathering the height of the object of interest (in this case, the book):
 
     ```python
     object_height = float(sys.argv[2]) # new argument in the script
     ```
 
-    Second, complete the `compute_depth_from_gray_image()` function in the `process_images.py` script with your solution 
+    Second, complete the `compute_depth_from_gray_image()` function in the [process_images.py](depth/process_images.py) script with your solution 
     to calculate the depth based on the `image_coordinates` provided for the object when the script runs. When
     you are done implementing your solution, you should be able to: (1) run the script, providing the book's height; 
     (2) select the book in the grayscale image; and (3) see the estimated depth printed in the terminal:
@@ -136,12 +136,11 @@ add an additional input argument to the script for gathering the height of the o
     Estimated depth: ... <- your result
     ```
 
-    Write in your report the resulting depth value that you computed for the book. And don't forget to commit your 
-    modified script to your repository!
+    Write in your report the resulting depth value that you computed for the book. And don't forget to commit your modified script to your repository!
 
     > Tip: The book is not perfectly parallel to the horizontal and vertical axes of the camera's frame, thus the book does not appear in the image as a perfect rectangle. This is OK for this part of the assignment, though. The important detail when selecting the book in the image is that the top and bottom part of the green rectangle align as best as possible with the top and bottom edge of the book's cover.
 
-- **VI-3.** Add code to the `process_images.py` script to compare your estimated value from V-2 with the average depth of 
+- **VI-3.** Add code to the [process_images.py](depth/process_images.py) script to compare your estimated value from V-2 with the average depth of 
 the book in the depth image. To this end, complete the `compute_depth_from_depth_image()` function in the script such that:
 
     i. it gathers the depth values corresponding to the book from the depth image,
