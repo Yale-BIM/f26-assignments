@@ -391,7 +391,7 @@ starting this part of the assignment.
 
     > The `ros-jazzy-cv-bridge` dependency should already installed in the bim laptops and the zoo machines, so you can skip this step if you are working on those computers.
 
-1. Inspect the `virtual_camera.py` node that is provided as part of this assignment within the `shutter_lookat/scripts` directory.  
+1. Inspect the [virtual_camera.py](shutter_lookat/scripts/virtual_camera.py) node that is provided as part of this assignment within the `shutter_lookat/scripts` directory.  
 
 2. Complete the `project_3D_point()` function at the top of the script. This function receives the coordinates of a 
 3D point with coordinates x, y, z in the camera frame and computes the projected location for this point onto the image
@@ -429,7 +429,7 @@ plane.
     cv2.circle(image, (x,y), radius, (0,0,255), outline_width) # (x,y) is the projected location of the target on the image
     ```
     
-    > Tip: See the official [OpenCV documentation](https://docs.opencv.org/4.2.0/dc/da5/tutorial_py_drawing_functions.html) 
+    > Tip: See the official [OpenCV documentation](https://docs.opencv.org/4.6.0/dc/da5/tutorial_py_drawing_functions.html) 
     for more examples on drawing basic figures.
 
     d. The `draw_image()` function should return the image with the drawn circle.
@@ -446,7 +446,7 @@ based on the following parameters:
     # note: assume there's no skew.
     ```
    
-    > Tip: If you are unsure of what the above parameters mean, read more about projective cameras 
+    > Tip: If you are unsure of what the above parameters mean, check the course slides and/or read more about projective cameras 
     in Hartly & Zisserman's [Multiple View Geometry](http://www.robots.ox.ac.uk/~vgg/hzbook/) book.
 
 5. Edit the `target_callback()` function in the `virtual_camera.py` node such that it repeats the steps below every time 
@@ -457,7 +457,7 @@ a new message from the /target topic is received.
     **b.** Call the `draw_image()` function to create a virtual camera image that shows the projected location of the target
     as a circle. The resulting image should have dimensions of 640 x 480 pixels.
    
-    **c.** Publishes the image that you created with OpenCV as a [sensor_msgs/msg/Image](https://docs.ros2.org/jazzy/api/sensor_msgs/msg/Image.html) message in ROS 2. You
+    **c.** Publishes the image that you created with OpenCV as a [sensor_msgs/msg/Image](https://docs.ros.org/en/jazzy/p/sensor_msgs/msg/Image.html) message in ROS 2. You
     can use the [cv_bridge](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Cv-Bridge/Cv-Bridge-Python.html) library to convert the OpenCV image to
     an Image message. Note that the Image message should have a `header` with the current time as
     `stamp` and the `shutter_camera_color_optical_frame` frame as `frame_id`. The Image message should be published by your node
