@@ -464,7 +464,7 @@ a new message from the /target topic is received.
     through the `/virtual_camera/image_raw` topic.
     
     > Tip: Examples on converting OpenCV images to ROS 2 messages can be found
-    in [this tutorial](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Cv-Bridge/Cv-Bridge-Python.html).
+    in [this tutorial](https://github.com/ros-perception/image_transport_tutorials#py_simple_image_pub).
     
 6. Launch the `generate_target.launch.py` script again, run your node:
 
