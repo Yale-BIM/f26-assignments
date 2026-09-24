@@ -606,7 +606,7 @@ the virtual camera that you already implemented is working correctly.
     > Tip: If parts of the robot are displayed in the camera plugin image, then you can remove them by temporarily disabling the `RobotModel display` in Rviz.
     
     Once the image that is published by the `virtual_camera.py` script is consistent 
-    with what the Camera plugin shows in RViz, record a ROS 2 `bag` -- a log of the system -- in MCAP format 
+    with what the Camera plugin shows in RViz, record a ROS 2 `bag` -- a log of the system -- in [MCAP format](https://mcap.dev/guides) 
     as in [this tutorial](https://docs.ros.org/en/jazzy/Tutorials/Beginner-CLI-Tools/Recording-And-Playing-Back-Data/Recording-And-Playing-Back-Data.html). 
     The bag should have all of the messages that are streamed in your system for a duration of 8 seconds.
     
@@ -640,14 +640,14 @@ the virtual camera that you already implemented is working correctly.
 when the target is behind the camera? How and why is the image changed? To visualize this result, you can launch the `generate_target.launch.py` script with the optional parameter `target_x_plane:=<x>`, where \<x\> corresponds to the target's
 x coordinate on the robot's `shutter_base_footprint` frame. Then inspect the images that your node generates.
 
-- **III-4.** Your virtual camera could see behind it, but real cameras don't do that. Modify the `draw_image()` function in the virtual_camera.py node so that the part of your code that computes the projection of the target and draws the circle only executes if the target is in front of the camera. That is, these parts of your program should only execute if the Z component of the target's position in the camera coordinate frame is positive. If the Z component is zero or negative, the function should instead return an empty (white) image. In the latter case, the function should also print a warning message:
+- **III-4.** Your virtual camera could see behind it, but real cameras don't do that. Modify the `draw_image()` function in the `virtual_camera.py` node so that the part of your code that computes the projection of the target and draws the circle only executes if the target is in front of the camera. That is, these parts of your program should only execute if the Z component of the target's position in the camera's coordinate frame (`shutter_camera_color_optical_frame`) is positive. If the Z component is zero or negative, the function should instead return an empty (white) image. In the latter case, the function should also print a warning message:
 
     ```python
     # example warning (add "import rclpy.logging" at the top of your script)
     rclpy.logging.get_logger("virtual_camera").warn("Warning: Target is behind the camera (z={})".format(z)) # z is the z coordinate for the target's center point relative to the camera frame
     ```
 
-    > Note: `rclpy.logging.get_logger()` returns a ROS logger without needing a node. Import it explicitly with `import rclpy.logging`: a plain `import rclpy`
+    > Note: `rclpy.logging.get_logger()` returns a ROS logger without needing a node. Import it explicitly with `import rclpy.logging`, as a plain `import rclpy`
     does not make the `rclpy.logging` submodule available. Also keep `draw_image()` at the top level of the
     script -- the public tests import it directly with `from virtual_camera import draw_image`.
 
