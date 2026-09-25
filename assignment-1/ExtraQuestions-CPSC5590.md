@@ -164,9 +164,9 @@ the book in the depth image. To this end, complete the `compute_depth_from_depth
     $ ./process_images.py images.npz <book_height>
     Loading images.npz
     (...)
-    Estimated depth: ... <- your result from VI-2
-    Estimated depth from depth image: ... <- result from VI-3
-    Absolute difference between estimates: ... <- result from VI-3
+    Estimated depth: ... <- your result for VI-2
+    Estimated depth from depth image: ... <- result for VI-3
+    Absolute difference between estimates: ... <- result for VI-3
     ```
   
     Save in your report your estimated depth from the depth image (from Part VI-3) and the absolute difference between
