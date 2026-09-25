@@ -4,7 +4,7 @@ Assignment repository for **Yale's [CPSC-4590/5590 Building Interactive Machines
 
 ## General Instructions
 
-For Assignments 1-2, it is essential that you use a computer with Ubuntu 24.04--see the [UBUNTU_COMPUTERS.md](UBUNTU_COMPUTERS.md) for more details. Also, before starting the assignments, you should have completed the set up instructions in:
+For Assignments 1-2, it is essential that you use a computer with Ubuntu 24.04--see the [UBUNTU_COMPUTERS.md](UBUNTU_COMPUTERS.md) document for more details. Also, before starting the assignments, you should have completed the set up instructions in:
 
 1. [SETUP0_ROSWorkspace.md](SETUP0_ROSWorkspace.md) 
 2. [SETUP1_GitAssignmentRepo.md](SETUP1_GitAssignmentRepo.md)
