@@ -4,9 +4,9 @@ Assignment repository for **Yale's [CPSC-4590/5590 Building Interactive Machines
 
 ## General Instructions
 
-To get started with a given assignment, see the README.md file within the assignment directory. 
+To get started with a given assignment, see the README.md file within the assignment directory.
 
-For Assignments 1-2, it is essential that you have completed the two set of set up instructions that are included in this repository:
+For Assignments 1-2, it is essential that you use a computer with Ubuntu 24.04--see the [UBUNTU_COMPUTERS.md](UBUNTU_COMPUTERS.md) for more details. Also, before starting the assignments, you should have completed the set up instructions in:
 
 1. [SETUP0_ROSWorkspace.md](SETUP0_ROSWorkspace.md) 
 2. [SETUP1_GitAssignmentRepo.md](SETUP1_GitAssignmentRepo.md)
