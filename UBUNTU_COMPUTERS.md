@@ -12,7 +12,7 @@ Students enrolled in the course may use any of the computers below for the assig
 
 - Zoo computers that are not headless. The Computer Science department at Yale provides students access to desktop computers for coursework. The computers that are not headless are located in AKW (3rd floor) or in 17HH ([room 111](https://registrar.yale.edu/yale-university-classrooms/classroom-list/hlh17-111)). See [https://zoo.cs.yale.edu/newzoo/](https://zoo.cs.yale.edu/newzoo/) for more details.
 
-    Similar to the bim laptops, students should log into the Zoo machines with their netID. 
+    Similar to the bim laptops, students should log into the Zoo machines with their netID. However, different to the bim laptops, the Zoo does have a networked filesystem, so if you compile your workspace in your home in a Zoo machine, then you should be able to see this workspace in another Zoo machine.
 
 If students choose to use a different computer than those listed above for the assignments, then they would likely need `sudo` permission to install the dependencies for the assignments. See the [SETUP0..md](SETUP0_ROSWorkspace.md) file for more details.
 
