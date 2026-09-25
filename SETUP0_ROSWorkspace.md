@@ -121,7 +121,7 @@ in your home directory. To do this, follow steps 1-2 in this tutorial:
     $ colcon build --symlink-install --packages-skip moveit_ros_tests moveit_runtime --cmake-args -DCMAKE_BUILD_TYPE=Release --parallel-workers 2
     ```
 
-    (again, be patient...)
+    (again, be patient... In a [Zoo machine](UBUNTU_COMPUTERS.md), building the workspace for the first time may take ~20 min)
 
 
     Now you should have an install space in `~/ros2_ws/install`, which contains its own `setup.bash` file.
