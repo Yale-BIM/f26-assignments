@@ -53,7 +53,7 @@ in your home directory. To do this, follow steps 1-2 in this tutorial:
     $ git switch bim
  
     # Load git submodules with ROS dependencies
-    $ git submodule update --init
+    $ git submodule update --init --recursive
     ```
     
     > [Git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) are other,
@@ -100,6 +100,14 @@ in your home directory. To do this, follow steps 1-2 in this tutorial:
     Read the README.md file in the root level of the 
     [shutter-ros2](https://gitlab.com/interactive-machines/shutter/shutter-ros2.git) repository
     to understand its content and general organization. You can also access the documentation for shutter-ros at [https://shutter-ros2.readthedocs.io](https://shutter-ros2.readthedocs.io). 
+
+3. Get additional dependencies for Shutter
+
+    ```bash
+    cd ~/ros2_ws
+    vcs import src --input src/shutter-ros2/jazzy_moveit.repos
+    vcs import src --input src/shutter-ros2/jazzy_mujoco.repos
+    ```
 
 3. Build the packages in the src directory of your workspace with `colcon build`. 
 
