@@ -112,6 +112,10 @@ in your home directory. To do this, follow steps 1-2 in this tutorial:
 3. Build the packages in the src directory of your workspace with `colcon build`. 
 
     ```bash
+    # Source the main jazzy setup.bash
+    # This gives you access to colcon for building your workspace
+    $ source /opt/ros/jazzy/setup.bash
+
     # Build your workspace
     $ cd ~/ros2_ws
     $ colcon build --symlink-install --packages-skip moveit_ros_tests moveit_runtime --cmake-args -DCMAKE_BUILD_TYPE=Release --parallel-workers 2
