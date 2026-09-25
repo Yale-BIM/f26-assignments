@@ -265,9 +265,9 @@ the position of a simulated moving object as a ROS 2 tf2 frame (`target`) relati
     - Create a new ROS 2 node in Python within the `scripts` directory of the `shutter_lookat` package.
 The node should be named `publish_target_relative_to_realsense_camera.py`. The python script should have executable permissions:
 
-    ```bash
-    $ chmod +x <path-to-script>
-    ```
+        ```bash
+        $ chmod +x <path-to-script>
+        ```
 
     - Within your new node:
     
