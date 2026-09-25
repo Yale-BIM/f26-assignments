@@ -653,11 +653,13 @@ x coordinate on the robot's `shutter_base_footprint` frame. Then inspect the ima
     does not make the `rclpy.logging` submodule available. Also keep `draw_image()` at the top level of the
     script -- the public tests import it directly with `from virtual_camera import draw_image`.
 
-Run public tests for Part III of this assignment to ensure that your node is operating as expected:
+Finally, run public tests for Part III of this assignment to ensure that your node is operating as expected:
 
  ```bash
  $ colcon test --packages-select shutter_lookat_public_tests --event-handlers console_direct+ --ctest-args -R test_virtual_camera
  ```
+
+ And remember to commit your code regularly!
 
 ## Part IV. Making a fancier virtual camera
 You will now modify your virtual_camera.py node so that instead of drawing a circle with a fixed radius for the target, 
