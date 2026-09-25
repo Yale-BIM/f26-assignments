@@ -290,7 +290,7 @@ given the increased complexity of this node in comparison previous examples. For
             > Tip 2: You can use the [tf2_geometry_msgs](https://index.ros.org/p/tf2_geometry_msgs/) API to transform the pose of the object
             as in [this post](https://answers.ros.org/question/222306/transform-a-pose-to-another-frame-with-tf2-in-python/).
 
-            > Tip 3: As mentioned above, it is important that you query the transformation at the same time as when the target's pose was computed. If you check the code for how this target is published, you'll see that this time is published in the message's header (see the `publish_target()` function in [generate_target.py](shutter_lookat/scripts/generate_target.py)).
+            > Tip 3: As mentioned above, it is important that you query the transformation at the same time as when the target's pose was computed. If you check the code for how this target is generated and published, you'll see that this time is provided in the message's header (see the `publish_target()` function in [generate_target.py](shutter_lookat/scripts/generate_target.py)).
             
         - Broadcast a tf2 transform between the `shutter_camera_color_optical_frame` frame (parent) and a new `target` frame (child) in tf2. 
         The target frame should match the pose of the simulated object in the `shutter_camera_color_optical_frame`.
