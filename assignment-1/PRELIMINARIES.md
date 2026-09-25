@@ -96,7 +96,7 @@ the pose of ![equation](https://latex.codecogs.com/png.latex?A)<!--$`A`$--> in !
     <br>
     Note that the ![equation](https://latex.codecogs.com/png.latex?3%20%5Ctimes%203) <!--$`3 \times 3`$--> submatrix of ![equation](https://latex.codecogs.com/png.latex?R)<!--$`R`$--> with the elements ![equation](https://latex.codecogs.com/png.latex?r_%7B11%7D%20%5Cldots%20r_%7B33%7D) <!--$`r_{11}`$ ... $`r_{33}`$-->
     is an [orthogonal matrix](https://en.wikipedia.org/wiki/Orthogonal_matrix).<br>    
-    It is important to know that [ROS uses quaternions](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Learning-About-Tf2-And-Time-Cpp.html) 
+    It is important to know that [ROS uses quaternions](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Quaternion-Fundamentals.html) 
     to represent rotations, but there are many other useful representations (e.g., 
     [Euler angles](https://en.wikipedia.org/wiki/Euler_angles)).
 
