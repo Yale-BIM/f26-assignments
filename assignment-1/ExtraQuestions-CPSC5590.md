@@ -136,9 +136,9 @@ add an additional input argument to the script for gathering the height of the o
     Estimated depth: ... <- your result
     ```
 
-    Write in your report the resulting depth value that you computed for the book. And don't forget to commit your modified script to your repository!
-
     > Tip: The book is not perfectly parallel to the horizontal and vertical axes of the camera's frame, thus the book does not appear in the image as a perfect rectangle. This is OK for this part of the assignment, though. The important detail when selecting the book in the image is that the top and bottom part of the green rectangle align as best as possible with the top and bottom edge of the book's cover.
+
+    Don't forget to commit your modified script to your repository!
 
 - **VI-3.** Add code to the [process_images.py](depth/process_images.py) script to compare your estimated value from VI-2 with the average depth of 
 the book in the depth image. To this end, complete the `compute_depth_from_depth_image()` function in the script such that:
