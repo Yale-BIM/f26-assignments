@@ -14,6 +14,6 @@ Students enrolled in the course may use any of the computers below for the assig
 
     Similar to the bim laptops, students should log into the Zoo machines with their netID. 
 
-
+If students choose to use a different computer than those listed above for the assignments, then they would likely need `sudo` permission to install the dependencies for the assignments. See the [SETUP0..md](SETUP0_ROSWorkspace.md) file for more details.
 
 
