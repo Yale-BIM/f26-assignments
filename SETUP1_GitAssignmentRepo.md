@@ -77,7 +77,7 @@ which contains the set of assignments and starter code.
 
     ```bash
     # Example
-    $ git pull upstream master
+    $ git pull upstream main
     ```
     
 	You should then have separate folders for each of the assignments in your repository.
