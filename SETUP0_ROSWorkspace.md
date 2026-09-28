@@ -101,7 +101,7 @@ in your home directory. To do this, follow steps 1-2 in this tutorial:
     [shutter-ros2](https://gitlab.com/interactive-machines/shutter/shutter-ros2.git) repository
     to understand its content and general organization. You can also access the documentation for shutter-ros at [https://shutter-ros2.readthedocs.io](https://shutter-ros2.readthedocs.io). 
 
-3. Get additional dependencies for Shutter
+3. Get additional dependencies for Shutter with [vcstool](https://github.com/dirk-thomas/vcstool).
 
     ```bash
     cd ~/ros2_ws
@@ -109,7 +109,7 @@ in your home directory. To do this, follow steps 1-2 in this tutorial:
     vcs import src --input src/shutter-ros2/jazzy_mujoco.repos
     ```
 
-3. Build the packages in the src directory of your workspace with `colcon build`. 
+4. Build the packages in the src directory of your workspace with `colcon build`. 
 
     ```bash
     # Source the main jazzy setup.bash
@@ -139,7 +139,7 @@ in your home directory. To do this, follow steps 1-2 in this tutorial:
 
 
 
-4. Configure your bash environment. First, add ```source /opt/ros/jazzy/setup.bash``` and ```source ~/ros2_ws/install/setup.bash``` at the end of your `.bashrc` file to automatically set up your environment with your workspace every time you open a new shell. Otherwise, make sure to source ~/ros2_ws/install/setup.bash on every new shell that you want to use to work with ROS 2. Sourcing setup.bash from your install space will ensure that ROS 2 can work properly with the code that you've added to and built in ~/ros2_ws. 
+5. Configure your bash environment. First, add ```source /opt/ros/jazzy/setup.bash``` and ```source ~/ros2_ws/install/setup.bash``` at the end of your `.bashrc` file to automatically set up your environment with your workspace every time you open a new shell. Otherwise, make sure to source ~/ros2_ws/install/setup.bash on every new shell that you want to use to work with ROS 2. Sourcing setup.bash from your install space will ensure that ROS 2 can work properly with the code that you've added to and built in ~/ros2_ws. 
 
     Second, add ```export ROS_AUTOMATIC_DISCOVERY_RANGE="LOCALHOST"``` at the end of your `.bashrc` file to ensure that ROS 2 only runs on your local network. 
 
