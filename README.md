@@ -35,6 +35,12 @@ For every assignment, you need to submit a report that documents:
 2) which AI tool (if any) you used while working on your assignment; and
 3) how you used the AI tool.
 
+## Late Days
 
+Each student has 3 late days to be used as needed to extend the deadline of a programming assignment for 1, 2, and up to 3 days after the original deadline. 
+
+Not all late days need to be used on the same assignment. For example, a student may use zero late days in Assignment 1, and three late days in Assignment 2. While another student may choose to use two late days in Assignment 1, and zero late days in Assignment 2. 
+
+After the 3 late days, the assignments will be penalized with -50% of the grade for every 24h after the deadline. 
 
 
