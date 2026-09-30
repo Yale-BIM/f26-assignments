@@ -118,10 +118,12 @@ in your home directory. To do this, follow steps 1-2 in this tutorial:
 
     # Build your workspace
     $ cd ~/ros2_ws
-    $ colcon build --symlink-install --packages-skip moveit_ros_tests moveit_runtime --cmake-args -DCMAKE_BUILD_TYPE=Release --parallel-workers 2
+    $ MAKEFLAGS="-j1 -l1" colcon build --symlink-install --packages-skip moveit_ros_tests moveit_runtime --cmake-args -DCMAKE_BUILD_TYPE=Release --parallel-workers 1
     ```
 
-    (again, be patient... In a [Zoo machine](UBUNTU_COMPUTERS.md), building the workspace for the first time may take ~20 min)
+    (again, be patient...)
+    
+    > In a [bim laptop](UBUNTU_COMPUTERS.md) with 16GB of RAM, the `colcon build` command could take ~40-50min when run the first time, because [moveit](https://moveit.ai/) -- one of the dependencies of Shutter -- uses a lot of templates in C++, for which sequential compilation (`--parallel-workers 1`) is necessary to keep memory usage reasonable. In a [Zoo machine](UBUNTU_COMPUTERS.md), if you setup the make flags to `-j2 -l2` and `--parallel-workers 2`, building the workspace for the first time may take ~20 min.
 
 
     Now you should have an install space in `~/ros2_ws/install`, which contains its own `setup.bash` file.
