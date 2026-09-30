@@ -102,7 +102,7 @@ $ git pull
 
 # finally, re-build your colcon workspace 
 $ cd <path-to-your-ros2-workspace-root-directory>
-$ colcon build --symlink-install --packages-skip moveit_ros_tests moveit_runtime --cmake-args -DCMAKE_BUILD_TYPE=Release --parallel-workers 2
+$ MAKEFLAGS="-j1 -l1" colcon build --symlink-install --packages-skip moveit_ros_tests moveit_runtime --cmake-args -DCMAKE_BUILD_TYPE=Release --parallel-workers 1
 ```
 
 > Tip: If you cannot find the `shutter-ros2` directory in your workspace's src folder,
