@@ -44,6 +44,7 @@ libglfw3-dev
 
 # ---- Building the forked MoveIt 2 from source ----
 ros-jazzy-moveit-msgs
+ros-jazzy-moveit
 ros-jazzy-srdfdom
 ros-jazzy-geometric-shapes
 ros-jazzy-ompl
