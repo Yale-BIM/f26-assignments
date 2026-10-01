@@ -196,9 +196,6 @@ Now you will inspect the robot's tf2 tree with tf2 tools.
 - **I-1.** Generate an image of the tf2 tree of Shutter with [view_frames.py](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Tf2-Main.html). 
 Include this image in your report.
 
-    > Tip: You can also generate the image with the 
-    [rqt_tf_tree](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Tf2-Main.html) interface if you prefer.
-
 - **I-2.** Based on the tf2 tree from I-1, which frames are between the robot's *shutter_base_footprint* 
 frame and the *shutter_camera_color_optical_frame* frame?
 
@@ -380,7 +377,7 @@ given the increased complexity of this node in comparison previous examples. For
         code is backed up and readily accessible in the future.
     
 - **II-2.**  Stop any ROS 2 processes that you are running, relaunch the 
-    `generate_target.launch.py` script, run your `publish_target_relative_to_realsense_camera.py` node, and create a new image of the tf2 tree in ROS 2, e.g., using [view_frames.py](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Tf2-Main.html) or [rqt_tf_tree](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Tf2-Main.html). 
+    `generate_target.launch.py` script, run your `publish_target_relative_to_realsense_camera.py` node, and create a new image of the tf2 tree in ROS 2 using [view_frames.py](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Tf2-Main.html). 
     Add the image of the tf2 tree to your report.
 
 
@@ -489,7 +486,7 @@ a new message from the /target topic is received.
     ```
 
     and visualize the images that your node is publishing using the 
-`ros2 run rqt_image_view rqt_image_view` node, which is one of the many [Rqt plugins](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-RQt.html) that ROS provide, like `rqt_graph` or `rqt_tf_tree`. In `rqt_image_view`, you should see the red circle
+`ros2 run rqt_image_view rqt_image_view` node, which is one of the many [Rqt plugins](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-RQt.html) that ROS provide, like `rqt_graph`. In `rqt_image_view`, you should see the red circle
 moving in a circular path in the image (as in the Figure below) in the `/virtual_camera/image_raw` topic. If this is not the case, please check your implementation of the
 `virtual_camera.py` script.
 
