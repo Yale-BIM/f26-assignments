@@ -108,7 +108,7 @@ Once your repository is setup, you will need to follow the steps below when work
 2. Pull updates from upstream:
 
 	```bash
-	$ git pull upstream master
+	$ git pull upstream main
 	```
 	
 	If a merge conflict happens, always use latest
