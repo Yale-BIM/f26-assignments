@@ -2,3 +2,13 @@
 *~
 *.bbl
 *.pyc
+
+# colcon's output. SETUP0_ROSWorkspace.md has you build from ~/ros2_ws, which
+# puts these outside this repository -- but running `colcon build` from inside
+# an assignment folder instead puts them here, and committing them makes a
+# submission tens of MB of object files and test logs. Nothing in them is
+# graded: the autograder rebuilds the workspace from its own copy and reads
+# only the Python files you wrote.
+build/
+install/
+log/
