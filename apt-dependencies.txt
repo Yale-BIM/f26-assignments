@@ -23,6 +23,7 @@ python3-numpy
 python3-opencv
 python3-pykdl
 python3-pytest
+python3-scipy
 python3-transforms3d
 python3-yaml
 
