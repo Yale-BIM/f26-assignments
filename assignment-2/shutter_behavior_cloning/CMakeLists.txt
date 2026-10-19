@@ -43,10 +43,36 @@ install(DIRECTORY data
   DESTINATION share/${PROJECT_NAME}/
 )
 
-# Test dependencies
+# --- Testing ---
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
+
+  # Only needed to declare the tests below, so they are found here rather than at
+  # the top of the file: a plain `colcon build` should not require them.
+  find_package(ament_cmake_ros REQUIRED)
+  find_package(launch_testing_ament_cmake REQUIRED)
+
+  # Integration tests
+
+  function(add_ros_isolated_launch_test path)
+    set(RUNNER "${ament_cmake_ros_DIR}/run_test_isolated.py")
+    add_launch_test("${path}" RUNNER "${RUNNER}" ${ARGN})
+
+    # CTest names the test after its path, with '/' replaced by '_' (e.g., 'test_test_policy.py').
+    string(REPLACE "/" "_" ctest_name ${path})
+
+    # Set the PYTHONPATH for this test, so that it finds this package's scripts (look_at_solver.py and
+    # generate_random_target.py) and the PyTorch installed in your Python virtual environment, which
+    # run_policy.py needs. VIRTUAL_ENV is read when the package is built, so build with the environment active.
+    set_tests_properties(${ctest_name} PROPERTIES
+      ENVIRONMENT "PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/scripts:$ENV{PYTHONPATH}:$ENV{VIRTUAL_ENV}/lib/python3.12/site-packages"
+    )
+  endfunction()
+
+  # The test brings up the MuJoCo simulation and MoveIt Servo (~30 seconds) and then runs 25 trials of
+  # a few seconds each. The number below is a ceiling for a hung test, not an expected runtime.
+  add_ros_isolated_launch_test(test/test_policy.py TIMEOUT 400)
 endif()
 
 ament_package()
