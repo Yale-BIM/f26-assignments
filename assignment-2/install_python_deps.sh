@@ -18,6 +18,9 @@ TORCH_VERSION=2.14.1
 # against, because the venv's site-packages are on the PYTHONPATH when running the ROS 2 nodes and tests.
 # Every pip3 command below repeats the pin so that no package upgrades numpy as a dependency.
 NUMPY_VERSION=1.26.4
+TENSORBOARD_VERSION=2.21.0
+MATPLOTLIB_VERSION=3.11.2
+GDOWN_VERSION=6.4.2
 
 # PyTorch. The default wheel works on CPU-only machines and on NVIDIA GPUs from Turing (RTX 20xx) onward.
 pip3 install "torch==${TORCH_VERSION}" "numpy==${NUMPY_VERSION}"
@@ -26,4 +29,5 @@ pip3 install "torch==${TORCH_VERSION}" "numpy==${NUMPY_VERSION}"
 # pip3 install "torch==${TORCH_VERSION}" "numpy==${NUMPY_VERSION}" --index-url https://download.pytorch.org/whl/cu126
 
 # Other dependencies
-pip3 install tensorboard matplotlib gdown "numpy==${NUMPY_VERSION}"
+pip3 install "tensorboard==${TENSORBOARD_VERSION}" "matplotlib==${MATPLOTLIB_VERSION}" \
+    "gdown==${GDOWN_VERSION}" "numpy==${NUMPY_VERSION}"
