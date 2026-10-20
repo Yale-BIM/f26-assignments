@@ -18,18 +18,18 @@ TORCH_VERSION=2.14.1
 # against, because the venv's site-packages are on the PYTHONPATH when running the ROS 2 nodes and tests.
 # Every pip3 command below repeats the pin so that no package upgrades numpy as a dependency.
 NUMPY_VERSION=1.26.4
-# matplotlib and setuptools are also pinned to the versions that ROS 2 Jazzy installs through apt.
-# colcon requires setuptools<80, so setuptools must not be upgraded as a dependency either.
+# matplotlib is also pinned to the version that ROS 2 Jazzy installs through apt.
 MATPLOTLIB_VERSION=3.6.3
-SETUPTOOLS_VERSION=68.1.2
+# setuptools must satisfy both torch (>=77.0.3) and colcon-core (<80). 
+SETUPTOOLS_VERSION=79.0.1
 TENSORBOARD_VERSION=2.21.0
 GDOWN_VERSION=6.4.2
 
 # PyTorch. The default wheel works on CPU-only machines and on NVIDIA GPUs from Turing (RTX 20xx) onward.
-pip3 install "torch==${TORCH_VERSION}" "numpy==${NUMPY_VERSION}"
+pip3 install "torch==${TORCH_VERSION}" "numpy==${NUMPY_VERSION}" "setuptools==${SETUPTOOLS_VERSION}"
 # For older Pascal GPUs (e.g., the GTX 1070/1080 in the lab), comment out the line above and use
 # the CUDA 12.6 build instead. CUDA 13 dropped Pascal support.
-# pip3 install "torch==${TORCH_VERSION}" "numpy==${NUMPY_VERSION}" --index-url https://download.pytorch.org/whl/cu126
+# pip3 install "torch==${TORCH_VERSION}" "numpy==${NUMPY_VERSION}" "setuptools==${SETUPTOOLS_VERSION}" --index-url https://download.pytorch.org/whl/cu126 --extra-index-url https://pypi.org/simple
 
 # Other dependencies
 pip3 install "tensorboard==${TENSORBOARD_VERSION}" "matplotlib==${MATPLOTLIB_VERSION}" \
