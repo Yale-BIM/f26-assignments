@@ -464,11 +464,7 @@ be placed within the `assignment-2/shutter_behavior_cloning/scripts` directory.
     should be saved to disk using [torch.save()](https://pytorch.org/docs/stable/generated/torch.save.html) to save the model's 
     state dictionary (`torch.save(model.state_dict(), path)`). Save the feature normalization parameters (e.g., the mean and 
     standard deviation of each input feature) into a single [JSON](https://docs.python.org/3/library/json.html) file, 
-    converting any numpy arrays or tensors to lists first. Don't save the normalization parameters with `torch.save()`: since 
-    PyTorch 2.6, `torch.load()` only loads tensors and basic Python types by default (`weights_only=True`), so it would refuse 
-    to load other pickled Python objects.
-
-        For example, you can save and load the normalization parameters with Python's [json](https://docs.python.org/3/library/json.html) module:
+    converting any numpy arrays or tensors to lists first. For example:
 
         ```python
         import json
@@ -519,5 +515,163 @@ script to load up your model from disk using the model file path and normalizati
     **NOTE 2:** When your code is evaluated in gradescope, the autograder code will download your model files from Google Drive automatically (using the function `download_model_files()` in [train_utils.py](shutter_behavior_cloning/scripts/train_utils.py))
     and run the same [test_policy.py](shutter_behavior_cloning/test/test_policy.py) script to evaluate your model on the 25 trials. The number of trials for which you get an acceptable output (as defined in the test) will set 50% of your grade for this part of the assignment. The other 50% of the grade corresponds to imitation learning performance on a new set of trials, where accetable behavior is defined as for the public test: the robot, when controlled by your policy, needs to approximate the expert's behavior for both joints with an error of less than 0.0261799 radians (1.5 degrees).
     
-    **NOTE 3:** The student(s) with the minimum average error: `avg(diff_j1 + diff_j3)` up to 3 point precision will receive 1 extra point in their final course grade. Here, `diff_j1` and `diff_j3` correspond to the absolute angular error between your policy's joint commands and the expert's commands on the first and third robot joint. We will evaluate projects by class: students in 4590 will only compete against other students in 4590 for the extra point; and students in 5590 will compete against other students taking the graduate course only. Thus, at least 2 students are expected to get the extra point for this part of the assignment (one enrolled in 4590 and one in 5590).
+    **NOTE 3:** The student(s) with the minimum average error on the new set of (unseen) trials will receive 1 extra point in their final course grade. Here, the error is computed as `avg(diff_j1 + diff_j3)`, where `diff_j1` and `diff_j3` correspond to the absolute angular error between your policy's joint commands and the expert's commands on the first and third robot joint. When ranking solutions, we will compare the error up to 3 point precision, and evaluate projects by class: students in 4590 will only compete against other students in 4590 for the extra point; and students in 5590 will compete against other students taking the graduate course only. Thus, at least 2 students are expected to get the extra point for this part of the assignment (one enrolled in 4590 and one in 5590).
     
+
+## Part III. Real-Time Filtering
+You will now implement a linear Kalman filter to track the moving target in front of the robot. Please read Sections 3.2.1 and 3.2.2 from Chapter 3 of the [Probabilistic Robotics book](http://www.probabilistic-robotics.org/) before starting with 
+this assignment. The Chapter is available in Canvas (under the Files section). Chapters 3.2.1 and 3.2.2 will remind you of how Kalman filters work.
+
+For this assignment, the `filter state` 
+![equation](https://latex.codecogs.com/gif.latex?\bold{x}&space;\in&space;\mathbb{R}^9)<!--$`\bold{x} \in \mathbb{R}^9`$--> should contain ![equation](https://latex.codecogs.com/gif.latex?\bold{x}&space;=&space;[p_x\&space;p_y\&space;p_z\&space;v_x\&space;v_y\&space;v_z\&space;a_x\&space;a_y\&space;a_z]^T)<!--$`\bold{x} = [p_x\ p_y\ p_z\ v_x\ v_y\ v_z\ a_x\ a_y\ a_z]^T`$-->, 
+where ![equation](https://latex.codecogs.com/gif.latex?\mathbf{p}&space;=&space;[p_x\&space;p_y\&space;p_z]^T)<!--$`\mathbf{p} = [p_x\ p_y\ p_z]^T`$--> corresponds to the estimated position of the target in the robot's `shutter_base_footprint` frame, 
+![equation](https://latex.codecogs.com/gif.latex?\mathbf{v}&space;=&space;[v_x\&space;v_y\&space;v_z]^T) <!--$`\mathbf{v} = [v_x\ v_y\ v_z]^T`$--> is its estimated velocity, and ![equation](https://latex.codecogs.com/gif.latex?\mathbf{a}&space;=&space;[a_x\&space;a_y\&space;a_z]^T)<!--$`\mathbf{a} = [a_x\ a_y\ a_z]^T`$--> is its estimated acceleration.
+
+The `transition model` of the filter should include additive gaussian noise and 
+follow the [equations of motion](https://en.wikipedia.org/wiki/Equations_of_motion):
+
+- ![equation](https://latex.codecogs.com/gif.latex?\bold{p}_{t&plus;1}&space;=&space;\bold{p}_t&plus;&space;\bold{v}_t&space;\Delta&space;t&plus;&space;\frac{1}{2}&space;\bold{a}&space;(\Delta&space;t)^2)<!--$`\bold{p}_{t+1} = \bold{p}_t + \bold{v}_t \Delta t + \frac{1}{2} \bold{a} (\Delta t)^2`$-->
+- ![equation](https://latex.codecogs.com/gif.latex?\bold{v}_{t&plus;1}&space;=&space;\bold{v}_t&plus;&space;\bold{a}_t&space;\Delta&space;t)<!--$`\bold{v}_{t+1} = \bold{v}_t + \bold{a}_t \Delta t`$-->
+- ![equation](https://latex.codecogs.com/gif.latex?\bold{a}_{t&plus;1}&space;=&space;\bold{a}_t)<!--$`\bold{a}_{t+1} = \bold{a}_t`$-->
+
+where ![equation](https://latex.codecogs.com/gif.latex?\Delta&space;t) <!--$`\Delta t`$--> is the elapsed time between updates.
+
+The `measurement model` of the filter should correct for the predicted state based on
+the observed position of the moving target. This observation will be generated by the [shutter_kf/scripts/generate_continuous_target.py](shutter_kf/scripts/generate_continuous_target.py)
+node for this part of the assignment.
+
+You should implement your Kalman filter 
+within the [kalman_filter.py](shutter_kf/scripts/kalman_filter.py) script that is inside of the `shutter_kf/scripts`
+directory, as indicated in the tasks below. The `kalman_filter.py` script already provides you with
+the main logic for a filtering node, and will help you debug your filter visually using RViz. 
+
+### Questions / Tasks
+
+- **III-1.** Please write down the mathematical equation for the filter's linear transition model, including
+Gaussian noise, in your report. Note that because you are not in control of the target's motion, but tracking will be
+happening only based on the observed target position, your filter's transition model should have no control input ![equation](https://latex.codecogs.com/gif.latex?\bold{u}) <!--$`\bold{u}`$--> component.
+
+- **III-2.** Please write down the mathematical equation for the filter's measurement model, including Gaussian
+noise, in your report.
+
+- **III-3.** Please write down the mathematical equation that defines the Kalman gain in your report.
+
+- **III-4.** What happens with the values in the Kalman gain if the covariance ![equation](https://latex.codecogs.com/gif.latex?Q)<!--$`Q`$--> for the measurement noise 
+grows?
+
+- **III-5.** Complete the `KF_predict_step()` function at the top of the
+[kalman_filter.py](shutter_kf/scripts/kalman_filter.py) script such that it predicts a new belief for the state (encoded by its mean and covariance) based
+on the prior belief and the transition model of the filter.
+
+- **III-6.** Complete the `KF_measurement_update_step()` function in the [kalman_filter.py](shutter_kf/scripts/kalman_filter.py) script such that
+it corrects the belief of the state of the filter based on the latest observation and the filter's
+measurement model.
+
+- **III-7.** Implement the `assemble_A_matrix()` and `assemble_C_matrix()` methods within the `KalmanFilterNode`
+class of the [kalman_filter.py](shutter_kf/scripts/kalman_filter.py) script. The methods should set the A and C
+parameters of the transition and measurement model of the filter used by the `KalmanFilterNode`. Use [numpy
+arrays](https://numpy.org/doc/stable/reference/generated/numpy.array.html) to represent the A and C matrices.
+
+    > NOTE: You do not have to implement the logic that passes the A and C parameters to the filter. This is
+    already done for you in the main loop of the KalmanFilterNode class.
+    
+- **III-8.** Implement the `initialize_process_covariance()` and `initialize_measurement_covariance()` methods
+within the `KalmanFilterNode` class of the [kalman_filter.py](shutter_kf/scripts/kalman_filter.py) script. These methods should set some fixed value
+for the `R` and `Q` covariances
+for the noise of the transition model and the measurement model, respectively. Don't worry too much about the
+exact values that you set for the noise now, as you will have to tune these values later in the assignment.
+
+- **III-9.** Implement the `assemble_observation_vector()` function within the `KalmanFilterNode` class of the
+[kalman_filter.py](shutter_kf/scripts/kalman_filter.py) script. This function should return a vector (numpy array) with the observed position for the
+target. 
+ 
+    > To make this part of the assignment easy, note that the `assemble_observation_vector()` function has
+    a Target message argument. This argument provides the latest observed position of the target as received
+    through the `/target` topic in the `KalmanFilterNode`.
+
+- **III-10.** Implement the `initialize_mu_and_sigma()` method within the `KalmanFilterNode` class of the
+[kalman_filter.py](shutter_kf/scripts/kalman_filter.py) script. This method should set the initial values for the filter belief based on the latest
+observed target position. Again, note that this observation is passed to the `initialize_mu_and_sigma()` method
+as an input argument.
+
+- **III-11.** Once you have finished the prior tasks, build your workspace and run:
+
+    ```bash
+    $ ros2 launch shutter_kf follow_target.launch.py
+    ```
+
+    This launch file brings up the simulation, RViz, MoveIt Servo, the moving target, your Kalman filter, and the expert
+    from Part II, which makes the robot look at the filtered position of the target (the `/filtered_target` topic).
+    You should then see the robot following the moving target
+    left-to-right and right-to-left, as in the gif below, although it may move a little bit more jerky depending on the parameters that you set for your filter.
+
+    <img src="docs/shutter_horizontal_tracking.gif" width="480"/>
+
+    The `FilteredMarkers` display in RViz (a MarkerArray) shows the history of the target positions handled by your filter.
+    Enable it in the Displays panel, open its Namespaces menu, and select only "observations". Then, you should see a white moving line that is a short history of the
+    observations received by the robot.
+
+    <img src="docs/shutter_observation.png" width="480"/>
+
+    If you unselect "observations" from the MarkerArray namespaces and activate the "filtered" option, then you should be able to see a green line that corresponds to a history of tracked 
+    positions for the moving target.
+
+    Improve your filter so that it can track well the object
+    when noise is added to the observation, considering
+    three motion trajectories for the object: `horizontal`,
+    `vertical`, `circular`. Run the code as follows:
+
+    ```bash
+    $ ros2 launch shutter_kf follow_target.launch.py add_noise:=true path_type:=<path_type>
+    ```
+
+    where `<path_type>=[horizontal|vertical|circular]`. No matter which path_type you choose, your filter should track the target
+    well (recovering the true target's position as if there was
+    no noise). 
+
+    Note that you can see what the `true` position of the target is 
+    when the `add_noise` flag is true by adding a PoseStamped visualization 
+    in RViz for the `/true_target` topic. Then, you should be able to see
+    the (noisy) observation as a red ball, the history of filtered positions 
+    as a green line (using the MarkerArray visualization mentioned before),
+    and the true target pose as a set of coordinate axes as follows:
+
+    <img src="docs/shutter_noisy_filtering.png" width="480"/>
+
+    > Tip: To see how the robot moves when it follows the true target (without your filter), run
+    `ros2 launch shutter_kf follow_target.launch.py follow_target_topic:=/true_target`. 
+
+    **NOTE 1:** This assignment includes the
+    [shutter_kf_public_tests/test/test_kalman_filter.py](shutter_kf_public_tests/test/test_kalman_filter.py) test script to check that the
+    dimensions of the matrices used in your kalman filter are all as expected
+    in your final assignment submission. You can run this test as follows:
+
+    ```bash
+    $ colcon test --packages-select shutter_kf_public_tests --event-handlers console_direct+ --ctest-args -R test_kalman_filter
+    ```
+
+    **NOTE 2: How much should you tune your filter?** To help you answer this question, we have included a [test](shutter_kf_public_tests/test/test_filter_quality.py) that 
+    measures the average L2 error with respect to the true position of the target. The test runs `follow_target.launch.py` with 
+    noisy observations, waits for your filter's first output, and then compares the filtered and true positions of the target 
+    for 30 seconds. It passes if the average error is less than 0.04 meters. You can run the test as follows:
+
+    ```bash
+    $ colcon test --packages-select shutter_kf_public_tests --event-handlers console_direct+ --ctest-args -R test_filter_quality
+    ```
+
+    The test uses the horizontal trajectory by default. Set the `PATH_TYPE` environment variable to test the other trajectories:
+
+    ```bash
+    $ PATH_TYPE=circular colcon test --packages-select shutter_kf_public_tests --event-handlers console_direct+ --ctest-args -R test_filter_quality
+    ```
+
+    It is expected that assignment submissions will pass a similar test to the one above for all motion trajectories (horizontal, vertical and circular). 
+
+
+## Parts IV and V
+
+Parts IV and V of the assignment are only for students taking CPSC-5590 (graduate version of the course). See the tasks/questions in the [ExtraQuestions-CPSC5590.md](ExtraQuestions-CPSC5590.md) document.
+
+**Once you get to the end of the assignment, remember to commit your code, push to GitHub, and indicate
+in your online report the commit SHA for the final version of your code. Your code and online report should be submitted to 
+Gradescope.**
