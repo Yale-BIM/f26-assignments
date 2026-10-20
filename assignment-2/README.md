@@ -22,7 +22,7 @@ This assignment will provide you practical experience with deep learning. In par
 
 
 #### System Requirements
-This assignment should be completed using Python 3.12 in Ubuntu 24.04. For training neural networks, we recommend that you use cloud services if your don't have access to a local GPU. For the last part of the assignment, you should have access to a computer with `ROS 2 Jazzy`.
+This assignment should be completed using Python 3.12 in Ubuntu 24.04. For training neural networks, we recommend that you use cloud services if your don't have access to a local GPU. For Parts II and III of the assignment, you should have access to a computer with `ROS 2 Jazzy` and your ROS 2 workspace set up as explained in [SETUP0..md](../SETUP0_ROSWorkspace.md).
 
 You should also have `git` and `pip3` installed in the machine that you are using to work on your assignment.
 You will use git to save your work to your [Github](http://www.github.com) repository. The pip3 tool will be used to install
@@ -57,8 +57,8 @@ You assignment will be evaluated based on the content of your report and your co
 
 - Report (52 pts for CPSC-4590 / 72 pts for CPSC-5590)
     * Part I (32 pts): I-1 (8 pts) + I-3 (8 pts) + I-4 (10 pts) + I-5 (6 pts)
-    * Part III (20 pts): IV-1 (5 pts) + IV-2 (5 pts) + IV-3 (5 pts) + IV-4 (5 pts)
-    * Part V (20 pts for CPSC-5590 only): IV-1 (7 pts) + IV-2 (5 pts) + IV-3 (8 pts)
+    * Part III (20 pts): III-1 (5 pts) + III-2 (5 pts) + III-3 (5 pts) + III-4 (5 pts)
+    * Part V (20 pts for CPSC-5590 only): V-1 (7 pts) + V-2 (5 pts) + V-3 (8 pts)
 - Code (128 pts for CPSC-4590 / 148 pts for CPSC-5590)
     * Part I (20 pts): I-1 (4 pts) + I-2 (6 pts) + I-3 (10 pts)
     * Part II (54 pts): II-1 (34 pts) + II-2 (20 pts)
@@ -92,16 +92,20 @@ $ git pull upstream master
 $ cd assignment-2
 $ ./install_python_deps.sh
 
-# update the shutter-ros2 repository 
+# update the shutter-ros2 repository (bim branch)
 $ cd <path-to-your-ros2-workspace>/src/shutter-ros2
+$ git switch bim 
 $ git pull
 
 # finally, build your ROS 2 workspace 
 $ cd <path-to-your-ros2-workspace>
-$ colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+$ MAKEFLAGS="-j1 -l1" colcon build --symlink-install --packages-skip moveit_ros_tests moveit_runtime --cmake-args -DCMAKE_BUILD_TYPE=Release --parallel-workers 1
 ```
 
-You can verify your PyTorch installation as follows:
+> Tip: Activate your Python virtual environment (`source <path-to-your-ros2-workspace>/.venv/bin/activate`) in every terminal where you
+train your models or run ROS nodes that use PyTorch (e.g., Part II's `run_policy.py`).
+
+You can verify your PyTorch installation in your virtual environment as follows:
 
 ```bash
 $ python3 -c "import torch; print(torch.__version__)"
@@ -117,6 +121,9 @@ The suffix after the `+` sign tells you which build you installed (e.g., `cu130`
 >> import torch
 >> torch.cuda.is_available()
 ```
+
+> Troubleshooting: If the above command fails, or RViz or the MuJoCo window fail to open with GLX or OpenGL errors after a system update, the NVIDIA kernel
+module and the NVIDIA libraries are probably out of sync. You can check this with the `nvidia-smi` command. If it fails in a Zoo machine, please contact `cszoo.support@yale.edu`; if it fails in a bim laptop, reach out to the course staff.
 
 ## Part I. Approximating a Non-Linear Function
 
@@ -362,3 +369,156 @@ return a [PyTorch model](https://pytorch.org/docs/stable/generated/torch.nn.Modu
     
 - **I-5.** What happens with the loss per epoch on the training set if you train with a batch size of 1?
 Explain why does the loss per epoch graph look different than with a bigger batch size (e.g., than with a batch size of 100).
+
+
+## Part II. Imitation Learning (1 potential extra points)
+
+In this part of the assignment, you will gain practical experience with Behavioral Cloning. That is, you will use
+supervised learning to estimate a motion policy for Shutter.
+
+Your expert -- which you aim to learn to imitate -- will be the `expert_opt.py` node within the 
+`shutter_behavior_cloning/scripts` directory. This expert uses optimization to align the face of the robot towards a target
+by moving the robot's first and third joint. In practice, this type of behavior could be 
+useful for the robot to convey attention towards a moving person or object in a real scenario.
+
+> **How Shutter moves in this assignment:** The expert, your policy (Part II) and the target-following launch file
+(Part III) all command the robot's joints through Shutter's servoing package, `shutter_servo`
+(in `<path-to-your-ros2-workspace>/src/shutter-ros2/shutter_servo`), which is built on Shutter's own version of
+[MoveIt Servo](https://moveit.picknik.ai/main/doc/examples/realtime_servo/realtime_servo_tutorial.html).
+Each node creates a `ServoJointClient` (see [servo_joint_client.py](shutter_behavior_cloning/scripts/servo_joint_client.py))
+and calls its `send_joint_goal([joint_1, joint_2, joint_3, joint_4])` method, which publishes the goal on the `/servo/joint_command` topic.
+The `shutter_servo` node turns each goal into joint velocity commands for MoveIt Servo's `servo_node`, which moves the arm smoothly
+towards the latest goal through the `joint_group_controller`, keeping the joints within their limits and stopping before the robot collides with itself.
+The launch files in this assignment start `shutter_servo` for you once the simulation's controllers are up, and `shutter_servo` activates
+the `joint_group_controller` on its own, so you don't need to switch controllers yourself.
+
+To make it easy for you to run the expert and see it in action, this assignment provides you the `collect_data.launch.py` 
+file. For example, if you run it as:
+
+```bash
+$ ros2 launch shutter_behavior_cloning collect_data.launch.py
+```
+
+Then, you should see the robot in RViz following the blue targets as below:
+<img src="docs/follow_blue_target.gif" width="600"/>
+
+> The launch file brings up the MuJoCo simulation, RViz, MoveIt Servo, a node that publishes a new random target
+every 4 seconds, and the expert. Add `headless:=true` to hide the MuJoCo window, or `rviz:=false` to skip RViz.
+
+The above launch file can also be used to generate data for behavioral cloning:
+
+```bash
+$ ros2 launch shutter_behavior_cloning collect_data.launch.py save_state_actions:=True
+```
+
+As the launch script is running, you can check that example `state`-`action` pairs are being written
+to `~/ros2_ws/install/shutter_behavior_cloning/share/shutter_behavior_cloning/data/state_action.txt`. 
+New data is appended to the end of this file every time that you run the launch file. You can also pass
+`output_file:=<path>` to write the data somewhere else. For example, you can check the data with:
+
+```
+$ tail -f state_action.txt
+# data from 19/10/2026 10:59:38
+shutter_base_footprint	3.4434	2.4219	2.3938	-0.0000	-0.0108	0.6055	0.4636
+shutter_base_footprint	2.0700	-2.7549	2.3742	0.6055	0.4589	-0.9356	0.5392
+shutter_base_footprint	2.0129	-2.5626	0.2120	-0.9356	0.5348	-0.9147	-0.0223
+shutter_base_footprint	1.0176	-0.8722	2.0430	-0.9147	-0.0277	-0.7325	0.8717
+(...)
+```
+
+The `state_action.txt` file contains comment lines that start with "#". Non-comment lines have 8 fields:
+1. frame_id for the target's position
+2. the target's x coordinate
+3. the target's y coordinate
+4. the target's z coordinate
+5. the robot's current joint_1 
+6. the robot's current joint_3
+7. the next joint_1 that the robot should have to point towards the target
+8. the next joint_3 that the robot should have to point towards the target
+
+Thus, the state representation for this imitation learning problem is 5-dimensional. 
+It corresponds to the target's position (X,Y,Z) and the current position for the robot's joint_1 and joint_3. 
+The output action is 2-dimensional. It corresponds to the new position for the robot's joints.
+
+### Questions / Tasks
+
+- **II-1.** Generate data for behavioral cloning as explained in the prior section, and implement a script to learn
+an imitation policy from this data using the PyTorch API (version 2.14.1 as in [install_python_deps.sh](install_python_deps.sh)). The script should be called `learn_policy.py` and 
+be placed within the `assignment-2/shutter_behavior_cloning/scripts` directory. 
+
+    The script should:
+     
+    1. Take as input the path to your training data:  
+       ```bash
+       $ python learn_policy.py <path_to_training_data>
+       ```
+    
+        > Tip: Run the new script within the same virtual environment as for Part I of this assignment, where you have already installed Pytorch.
+       
+    2. Load up the data and use it to train a neural network model that predicts the new joint positions for the robot 
+    (joint_1, and joint_3). For your convenience, this assignment provides you the `load_data()` function 
+    within the `assignment-2/shutter_behavior_cloning/scripts/train_utils.py` script to load up the `state_action.txt`
+    data.
+    
+    3. Save the model's weights to disk (as well as any feature normalization parameters if need be). The PyTorch model
+    should be saved to disk using [torch.save()](https://pytorch.org/docs/stable/generated/torch.save.html) to save the model's 
+    state dictionary (`torch.save(model.state_dict(), path)`). Save the feature normalization parameters (e.g., the mean and 
+    standard deviation of each input feature) into a single [JSON](https://docs.python.org/3/library/json.html) file, 
+    converting any numpy arrays or tensors to lists first. Don't save the normalization parameters with `torch.save()`: since 
+    PyTorch 2.6, `torch.load()` only loads tensors and basic Python types by default (`weights_only=True`), so it would refuse 
+    to load other pickled Python objects.
+
+    For example, you can save and load the normalization parameters with Python's [json](https://docs.python.org/3/library/json.html) module:
+
+    ```python
+    import json
+
+    # in learn_policy.py: save the parameters (mean and std are numpy arrays)
+    with open(norm_params_path, 'w') as fid:
+        json.dump({'mean': mean.tolist(), 'std': std.tolist()}, fid)
+    ```
+    
+    Once you have trained your model, upload your saved files to Google Drive and make them accessible to "Anyone with 
+    the link". Then, add these links to the top of the `assignment-2/shutter_behavior_cloning/scripts/train_utils.py` file
+    and test that they can be automatically downloaded using the `download_model_files()` function inside that same 
+    Python file. If Google gives you a link like 
+    `https://drive.google.com/file/d/<file_id>/view?usp=sharing`, then you should add 
+    `https://drive.google.com/uc?id=<file_id>` to the script for the evaluation with Gradescope to run successfully.
+    
+- **II-2.** Complete the `assignment-2/shutter_behavior_cloning/scripts/run_policy.py` script so that it loads up 
+your model (and any relevant normalization parameters) and computes new poses for Shutter to follow the target. More specifically, update the `__init__` function in the 
+script to load up your model from disk using the model file path and normalization params provided to the node via:
+    ```python
+    self.model_file = self.get_parameter("model").value              # required path to model file
+    self.normp_file = self.get_parameter("norm_params").value        # optional path to normalization parameters (empty str means no norm params)
+    ```
+    Load the model's weights with `torch.load(self.model_file, weights_only=True)` and the normalization parameters with `json.load()`.
+    Also, update the `compute_joints_position()` function to make a prediction for 
+    the robot's joint position such that the `target_callback()` function can command the robot to move appropriately relative to the observed target.
+
+    **NOTE 1:** You can test your model with the [test_policy.py](shutter_behavior_cloning/test/test_policy.py) test within 
+    `assignment-2/shutter_behavior_cloning/test`. Activate your Python virtual environment first, so that your node can import PyTorch. For example:
+    ```bash
+    $ source <path-to-your-ros2-workspace>/.venv/bin/activate
+    $ OUTPUT_FILE=<full_path_to_output_txt_file> MODEL=<full_path_to_model_pth> NORMP=<full_path_to_normalization_file> colcon test --packages-select shutter_behavior_cloning --event-handlers console_direct+ --ctest-args -R test_policy
+    ```
+    The test brings up the simulation, publishes 25 targets (the same ones every time that you run it), and compares the joint 
+    command that your `run_policy.py` node sends for each target with the expert's solution. It outputs a text file (full path should be provided via `OUTPUT_FILE`) with: trial number, the target's x,y,z coordinates, the expert's and your policy's
+    joint_1 and joint_3 positions, the difference (in radians) between your policy's and the expert's joint positions (diff_j1 and diff_j3), and an acceptable boolean value indicating if both 
+    differences are less than 0.0261799 radians (1.5 degrees). The last columns of the text file show the joint positions that the robot reached, 
+    for information only. The last line of the file summarizes how many trials were acceptable. The test fails if your node does
+    not send a command for some target within 10 seconds. 
+    
+    > Tip 1: You can use environment variables to define the full path of the output file, for example: `OUTPUT_FILE=$HOME/test_policy_output.txt MODEL=... NORMP=... colcon test ...`.
+
+    > Tip 2: Run the test with `RUN_EXPERT=true` instead of `MODEL` and `NORMP` to see what the output looks like for the expert. 
+    If your node fails to import torch during the test even though your virtual environment is active, rebuild the package with 
+    `colcon build --symlink-install --packages-select shutter_behavior_cloning --cmake-force-configure`: the test reads the location of
+    your virtual environment when the package is configured.
+  
+    **NOTE 2:** When your code is evaluated in gradescope, the autograder code will download your model files from Google Drive automatically (using the function `download_model_files()` in [train_utils.py](shutter_behavior_cloning/scripts/train_utils.py))
+    and run the same [test_policy.py](shutter_behavior_cloning/test/test_policy.py) script to evaluate your model on the 25 trials. The number of trials for which you get an acceptable output (as defined in the test) will set 50% of your grade for this part of the assignment. The other 50% of the grade corresponds to imitation learning performance on a new set of trials, where accetable behavior is defined as for the public test: the robot, when controlled by your policy, needs to approximate the expert's behavior for both joints with an error of less than 0.0261799 radians (1.5 degrees).
+    
+    **NOTE 3:** The student(s) with the minimum average error: `avg(diff_j1 + diff_j3)` up to 3 point precision will receive 1 extra point in their final course grade. Here, `diff_j1` and `diff_j3` correspond to the absolute angular error between your policy's joint commands and the expert's commands on the first and third robot joint. We will evaluate projects by class: students in 4590 will only compete against other students in 4590 for the extra point; and students in 5590 will compete against other students taking the graduate course only. Thus, at least 2 students are expected to get the extra point for this part of the assignment (one enrolled in 4590 and one in 5590).
+    
+

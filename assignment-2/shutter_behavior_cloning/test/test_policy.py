@@ -6,8 +6,9 @@
 # target with the expert's solution for it. A trial is acceptable if both joint_1 and joint_3
 # are within 1.5 degrees of the expert's solution.
 #
-# The results are written to ~/ros2_ws/test_policy_output.txt (or to the current directory if
-# ~/ros2_ws does not exist). The joint positions that the robot reached are also reported, but
+# The results are written to the file given by the OUTPUT_FILE environment variable or, if it is
+# not set, to ~/ros2_ws/test_policy_output.txt (or to the current directory if ~/ros2_ws does not
+# exist, which is <workspace>/build/shutter_behavior_cloning under `colcon test`). The joint positions that the robot reached are also reported, but
 # only for information: the trials are graded on the commanded joints.
 #
 # Usage:
@@ -240,8 +241,11 @@ class TestPolicy(unittest.TestCase):
         self.command_timeout = 10.0     # seconds (wall clock) to wait for the policy's command for a target
         self.settle_timeout = 5.0       # seconds (wall clock) to wait for the robot to stop moving
 
+        # OUTPUT_FILE overrides where the results are written. Otherwise, they go to ~/ros2_ws or, if that
+        # does not exist, to the current directory (<workspace>/build/<package> under `colcon test`).
         ws_dir = os.path.expanduser("~/ros2_ws")
-        self.output_file = os.path.join(ws_dir if os.path.isdir(ws_dir) else os.getcwd(), "test_policy_output.txt")
+        default_output = os.path.join(ws_dir if os.path.isdir(ws_dir) else os.getcwd(), "test_policy_output.txt")
+        self.output_file = os.path.expanduser(os.environ.get('OUTPUT_FILE', '')) or default_output
 
         # make positions repeatable
         np.random.seed(0)
@@ -455,8 +459,11 @@ class TestPolicy(unittest.TestCase):
             for i in range(self.positions.shape[0]):
                 p = self.positions[i]
                 expert, policy, reached = self.run_trial(p[0], p[1], p[2])
+                trial = "Trial {}/{}: target at ({:.3f}, {:.3f}, {:.3f})".format(
+                    i + 1, self.positions.shape[0], p[0], p[1], p[2])
 
                 if policy is None:
+                    self.node.get_logger().warn(trial + " -> no command received")
                     no_command.append(i)
                     row = ["%4d" % i, "%.3f" % p[0], "%.3f" % p[1], "%.3f" % p[2],
                            "%.5f" % expert[0], "%.5f" % expert[1]] + ["-"] * 4 + ["0"] + ["-"] * 2
@@ -465,6 +472,11 @@ class TestPolicy(unittest.TestCase):
                     d3 = np.fabs(min_angle_diff(expert[1], policy[1]))
                     acceptable = int(d1 < max_ang_difference and d3 < max_ang_difference)
                     num_acceptable += acceptable
+                    if acceptable:
+                        self.node.get_logger().info(trial + " -> acceptable")
+                    else:
+                        self.node.get_logger().warn(trial + " -> not acceptable (DIFFJ1 = {:.5f}, DIFFJ3 = {:.5f} "
+                                                            "radians)".format(d1, d3))
                     row = ["%4d" % i, "%.3f" % p[0], "%.3f" % p[1], "%.3f" % p[2],
                            "%.5f" % expert[0], "%.5f" % expert[1], "%.5f" % policy[0], "%.5f" % policy[1],
                            "%.5f" % d1, "%.5f" % d3, "%1d" % acceptable, "%.5f" % reached[0], "%.5f" % reached[1]]
@@ -479,7 +491,7 @@ class TestPolicy(unittest.TestCase):
             summary = "{} of {} trials were acceptable".format(num_acceptable, self.positions.shape[0])
             fid.write("# " + summary + "\n")
 
-        print(summary + ". Wrote the results to " + self.output_file)
+        self.node.get_logger().info(summary + ". Wrote the results to " + self.output_file)
         self.assertEqual(len(no_command), 0,
                          "The policy did not send a command on /policy_joint_command within {} seconds for trials {}. "
                          "Check the run_policy node's output for errors.".format(self.command_timeout, no_command))
