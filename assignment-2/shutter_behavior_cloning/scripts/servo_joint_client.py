@@ -4,8 +4,8 @@ Helper to command Shutter's arm joints through MoveIt Servo, so that nodes only 
 Each goal is published on the /servo/joint_command topic. The shutter_servo node turns it into commands for
 MoveIt Servo, which moves the arm smoothly towards the latest goal using the joint_group_controller. Servo does
 not plan a path around obstacles, but it stays within the joint limits and slows down and stops before the
-robot collides with itself or with objects in the planning scene. shutter_servo activates the
-joint_group_controller when it starts, so make sure that shutter_servo/launch/shutter_servo.launch.py is running.
+robot collides with itself. shutter_servo activates the joint_group_controller when it starts, so make sure 
+that shutter_servo/launch/shutter_servo.launch.py is running.
 
 Goals can be sent at any rate: once in a while (e.g., one per target in Part II of the assignment) or
 continuously (e.g., at 30 Hz to follow a moving target in Part III). The arm keeps moving towards the
