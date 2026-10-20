@@ -371,7 +371,7 @@ return a [PyTorch model](https://pytorch.org/docs/stable/generated/torch.nn.Modu
 Explain why does the loss per epoch graph look different than with a bigger batch size (e.g., than with a batch size of 100).
 
 
-## Part II. Imitation Learning (1 potential extra points)
+## Part II. Imitation Learning (1 potential extra point)
 
 In this part of the assignment, you will gain practical experience with Behavioral Cloning. That is, you will use
 supervised learning to estimate a motion policy for Shutter.
@@ -400,7 +400,7 @@ $ ros2 launch shutter_behavior_cloning collect_data.launch.py
 ```
 
 Then, you should see the robot in RViz following the blue targets as below:
-<img src="docs/follow_blue_target.gif" width="600"/>
+<img src="docs/follow_blue_target.gif" width="700"/>
 
 > The launch file brings up the MuJoCo simulation, RViz, MoveIt Servo, a node that publishes a new random target
 every 4 seconds, and the expert. Add `headless:=true` to hide the MuJoCo window, or `rviz:=false` to skip RViz.
@@ -457,7 +457,7 @@ be placed within the `assignment-2/shutter_behavior_cloning/scripts` directory.
        
     2. Load up the data and use it to train a neural network model that predicts the new joint positions for the robot 
     (joint_1, and joint_3). For your convenience, this assignment provides you the `load_data()` function 
-    within the `assignment-2/shutter_behavior_cloning/scripts/train_utils.py` script to load up the `state_action.txt`
+    within the [assignment-2/shutter_behavior_cloning/scripts/train_utils.py](shutter_behavior_cloning/scripts/train_utils.py) script to load up the `state_action.txt`
     data.
     
     3. Save the model's weights to disk (as well as any feature normalization parameters if need be). The PyTorch model
@@ -468,18 +468,18 @@ be placed within the `assignment-2/shutter_behavior_cloning/scripts` directory.
     PyTorch 2.6, `torch.load()` only loads tensors and basic Python types by default (`weights_only=True`), so it would refuse 
     to load other pickled Python objects.
 
-    For example, you can save and load the normalization parameters with Python's [json](https://docs.python.org/3/library/json.html) module:
+        For example, you can save and load the normalization parameters with Python's [json](https://docs.python.org/3/library/json.html) module:
 
-    ```python
-    import json
+        ```python
+        import json
 
-    # in learn_policy.py: save the parameters (mean and std are numpy arrays)
-    with open(norm_params_path, 'w') as fid:
-        json.dump({'mean': mean.tolist(), 'std': std.tolist()}, fid)
-    ```
+        # in learn_policy.py: save the parameters (mean and std are numpy arrays)
+        with open(norm_params_path, 'w') as fid:
+            json.dump({'mean': mean.tolist(), 'std': std.tolist()}, fid)
+        ```
     
     Once you have trained your model, upload your saved files to Google Drive and make them accessible to "Anyone with 
-    the link". Then, add these links to the top of the `assignment-2/shutter_behavior_cloning/scripts/train_utils.py` file
+    the link". Then, add these links to the top of the [assignment-2/shutter_behavior_cloning/scripts/train_utils.py](shutter_behavior_cloning/scripts/train_utils.py) file
     and test that they can be automatically downloaded using the `download_model_files()` function inside that same 
     Python file. If Google gives you a link like 
     `https://drive.google.com/file/d/<file_id>/view?usp=sharing`, then you should add 
@@ -521,4 +521,3 @@ script to load up your model from disk using the model file path and normalizati
     
     **NOTE 3:** The student(s) with the minimum average error: `avg(diff_j1 + diff_j3)` up to 3 point precision will receive 1 extra point in their final course grade. Here, `diff_j1` and `diff_j3` correspond to the absolute angular error between your policy's joint commands and the expert's commands on the first and third robot joint. We will evaluate projects by class: students in 4590 will only compete against other students in 4590 for the extra point; and students in 5590 will compete against other students taking the graduate course only. Thus, at least 2 students are expected to get the extra point for this part of the assignment (one enrolled in 4590 and one in 5590).
     
-
