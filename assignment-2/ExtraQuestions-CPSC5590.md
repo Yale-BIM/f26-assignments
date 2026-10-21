@@ -20,8 +20,32 @@ look a bit a way from the red ball, as shown below:
 
 - **IV-1.** Copy the `kalman_filter.py` script into a new `future_kalman_filter.py` script. Then, modify the new `future_kalman_filter.py`
 script so that it forecasts into the future the position of the target so that the robot is not so behind when tracking it. The forecasted
-position should still be output as a PoseStamped message throug the `/filtered_target` topic so that you can evaluate whether the robot
-is better tracking the target with the `follow_target.launch.py` script.
+position should be output as a PoseStamped message through a new `/future_target` topic. Because the `follow_target.launch.py` script
+still runs your original `kalman_filter.py`, also rename the node in your new script (e.g., to `future_kalman_filter_node`) and publish
+its markers through a new `/future_markers` topic so that the two filters do not conflict.
+
+    To evaluate whether the robot is better tracking the target, first make your new script executable and rebuild your workspace:
+
+    ```bash
+    $ chmod +x future_kalman_filter.py
+    $ cd <path-to-your-ros2-workspace>
+    $ MAKEFLAGS="-j1 -l1" colcon build --symlink-install --packages-select shutter_kf --cmake-args -DCMAKE_BUILD_TYPE=Release --parallel-workers 1
+    $ source install/setup.bash
+    ```
+
+    Then, run the `follow_target.launch.py` script so that the robot follows the `/future_target` topic:
+
+    ```bash
+    $ ros2 launch shutter_kf follow_target.launch.py add_noise:=true path_type:=circular fast_target:=true follow_target_topic:=/future_target
+    ```
+
+    And, in another terminal, run your new filter:
+
+    ```bash
+    $ ros2 run shutter_kf future_kalman_filter.py --ros-args -p use_sim_time:=true
+    ```
+
+    You can then visualize in RViz how well your new filter is working and even compare it with the prior version.
 
 
 

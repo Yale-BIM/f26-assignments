@@ -249,7 +249,7 @@ Read the code in the training script to familiarize yourself with its functional
     (e.g., Loss/Train, Loss/Val, MAE/Train, MAE/Val for the loss and mean absolute error after every epoch in the training and validation sets). The `GRAPHS` tab of the TensorBoard interface should show a 
     [computation graph](https://www.tensorflow.org/tensorboard/graphs) for your simple neural network model.
     
-    Double-click all nodes in the graph to expand them, and then make a screenshot of your computation graph and include it in your project report.
+    Double-click all nodes in the graph to expand them so that you can visualize all operations within your network, and then make a screenshot of your computation graph and include it in your online report.
     
     > NOTE: In general, we recommend that you use TensorBoard to check your models' computation
     graphs and training/validation performance for all of the other tasks in this assignment. 
