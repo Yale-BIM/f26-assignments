@@ -603,7 +603,7 @@ as an input argument.
     This launch file brings up the simulation, RViz, MoveIt Servo, the moving target, your Kalman filter, and the expert
     from Part II, which makes the robot look at the filtered position of the target (the `/filtered_target` topic).
     You should then see the robot following the moving target
-    left-to-right and right-to-left, as in the gif below, although it may move a little bit more jerky depending on the parameters that you set for your filter.
+    left-to-right and right-to-left, as in the gif below, although it may move a little bit more jerky depending on the parameters that you set for your filter. Note that the black sphere in RViz is the true target, and the red sphere is the robot's observation for that target, which is not particularly noisy right now.
 
     <img src="docs/shutter_horizontal_tracking.gif" width="480"/>
 
@@ -628,14 +628,6 @@ as an input argument.
     where `<path_type>=[horizontal|vertical|circular]`. No matter which path_type you choose, your filter should track the target
     well (recovering the true target's position as if there was
     no noise). 
-
-    Note that RViz also shows you the `true` position of the target, which is published
-    on the `/true_target` topic, as a small black ball. When the `add_noise` flag is true,
-    you should be able to see the (noisy) observation as a red ball, the history of filtered positions 
-    as a green line (using the MarkerArray visualization mentioned before),
-    and the true target as a black ball as follows:
-
-    <img src="docs/shutter_noisy_filtering.png" width="480"/>
 
     > Tip: To see how the robot moves when it follows the true target (without your filter), run
     `ros2 launch shutter_kf follow_target.launch.py follow_target_topic:=/true_target`. 
@@ -672,5 +664,5 @@ as an input argument.
 Parts IV and V of the assignment are only for students taking CPSC-5590 (graduate version of the course). See the tasks/questions in the [ExtraQuestions-CPSC5590.md](ExtraQuestions-CPSC5590.md) document.
 
 **Once you get to the end of the assignment, remember to commit your code, push to GitHub, and indicate
-in your online report the commit SHA for the final version of your code. Your code and online report should be submitted to 
+in your online report the commit SHA for the final version of your code. Your code (your whole repository) and your answers to the online report should be submitted to 
 Gradescope.**

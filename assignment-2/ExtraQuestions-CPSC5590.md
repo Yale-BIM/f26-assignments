@@ -4,31 +4,30 @@ The sections below for Assignment 2 are only meant to be completed/answered by s
 
 ## Part IV. Addressing Delayed Observations
 
-Once you have implemented your Kalman Filter (in Part III of the assignment), you should
-be able to visualize the robot following the target with the `follow_target.launch.py` script in the `shutter_kf` package.
-Real perception is not instantaneous, though: in real-world applications, by the time a detection of the target reaches your filter, the target has
-already moved. You can simulate this with the `observation_delay_frames` argument of the launch file. For instance, if you run:
+Part III of this assignment assumed that perception of the moving target was instantaneous. However, in many real-world applications, by the time a detection of the target reaches your filter, the target has
+already moved. You can simulate this with the `observation_delay_frames` argument of the `follow_target.launch.py` file. For instance, if you run:
 
 ```bash
 $ ros2 launch shutter_kf follow_target.launch.py add_noise:=true path_type:=circular observation_delay_frames:=12
 ```
 
-Then, each observation on the `/target` topic is published 12 frames (0.4 seconds at 30 Hz) after it was captured.
-The `header.stamp` of the observation is still the time when it was captured. The true position of the target on
-`/true_target` is not delayed. Even if your filter estimates the observed position well, its output on `/filtered_target`
-lags behind the true target, and so does the robot. In RViz, the green track of filtered positions and the red ball
-(which shows the delayed observations) trail the black ball that shows the true target, as shown below:
+Then, each observation on the `/true_target` topic is published 12 frames (0.4 seconds at 30 Hz) after it was captured in the `/target` topic.
+The `header.stamp` of the observation is still the time when it was captured. Even if your filter estimated the observed position well in Part III of this assignment, its output on `/filtered_target` would now 
+lag behind the true target, and so does the robot's motion. As shown below in RViz, the green track of filtered positions and the red ball
+(which shows the delayed observations) trail the black ball that shows the true target:
 
-<img src="docs/shutter_delay.png" width="480"/>
+<img src="docs/shutter_delayed_observation.gif" width="480"/>
 
 ### Questions / Tasks
 
-- **IV-1.** Copy the `kalman_filter.py` script into a new `future_kalman_filter.py` script. Then, modify the new `future_kalman_filter.py`
+- **IV-1.** Copy the `kalman_filter.py` script into a new `future_kalman_filter.py` script within the `shutter_kf/scripts` folder. Then, modify the new `future_kalman_filter.py`
 script so that it forecasts the position of the target into the future to make up for the delay in the observations.
-The forecast should estimate where the target is **now** (i.e., the position on `/true_target`, which your filter must
-not subscribe to). It should be output as a PoseStamped message through a new `/future_target` topic. Because the `follow_target.launch.py` script
+The forecast should estimate where the true target is **now** (i.e., the position on `/true_target`, which your filter must
+not subscribe to). 
+
+Your new filter should output the forecasted position as a PoseStamped message through a new `/future_target` topic. Because the `follow_target.launch.py` script
 still runs your original `kalman_filter.py`, also rename the node in your new script (e.g., to `future_kalman_filter_node`) and publish
-its markers through a new `/future_markers` topic so that the two filters do not conflict. You may also want to change the colors of the markers for this new filter so that you can distinguish them easily in RViz from the markers published by your original filter.
+its markers through a new `/future_markers` topic so that the two filters do not conflict. You may also want to change the colors of the visualization markers for your new filter so that you can distinguish them easily in RViz from the markers published by your original filter from Part III.
 
     To evaluate whether the robot is better tracking the target, first make your new script executable and rebuild your workspace:
 
