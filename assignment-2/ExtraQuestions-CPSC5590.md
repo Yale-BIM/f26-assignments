@@ -79,6 +79,26 @@ its markers through a new `/future_markers` topic so that the two filters do not
 
     It is expected that your `future_kalman_filter.py` passes a similar test for all three motion trajectories.
 
+- **IV-2.** The trace of a square matrix is the sum of the elements on its main diagonal:
+![equation](https://latex.codecogs.com/gif.latex?\mathrm{tr}(M)=\sum_{i=1}^{n}M_{ii})<!--$`\mathrm{tr}(M)=\sum_{i=1}^{n}M_{ii}`$-->.
+For a covariance matrix, the trace is a useful summary of uncertainty: the diagonal entries hold the variance of each
+individual random variable, ![equation](https://latex.codecogs.com/gif.latex?Var(X_i))<!--$`Var(X_i)`$-->, so adding them up gives the total
+spread across all the variables (ignoring the correlations between them, which are in the off-diagonal entries).
+
+    Modify your `future_kalman_filter.py` node so that it prints the trace of the position block of
+    ![equation](https://latex.codecogs.com/gif.latex?\Sigma)<!--$`\Sigma`$--> (i.e., the 3x3 block of the covariance that
+    corresponds to the x, y, z position of the target in your state) for:
+    - a) the current state, which is the belief of your filter right after it incorporates the latest observation (without forecasting), and
+    - b) the forecasted state that your node publishes on `/future_target`.
+
+    Specifically, each time your filter incorporates a new observation, print one line with the current time of your node, the trace for (a), and the trace for (b). 
+    
+    Then, run your node as in IV-1 with the circular trajectory, but with `observation_delay_frames:=24`. Wait at least 5 seconds (according to your node's clock) after your filter receives its first observation, and then report at least 3 of the printed lines with traces for (a) and (b) in your  report.
+
+- **IV-3.** Based on the equations of your Kalman filter, explain in your report why the trace for (b) differs from the trace for (a) in IV-2.
+
+- **IV-4.** For trace (b), explain why its values are almost constant across the lines that you reported in IV-2. If your values are not almost constant, explain what in your implementation or your run causes them to vary.
+
 
 
 ## Part V. Non-Parametric Filtering
