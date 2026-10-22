@@ -105,9 +105,11 @@ class GenerateContinuousTargetNode(Node):
         self.object.x = x_value
 
         # Define publishers
-        self.vector_pub = self.create_publisher(Target, '/target', 5)           # observation
+        self.vector_pub = self.create_publisher(Target, '/target', 5)                # observation
         self.vector_gt_pub = self.create_publisher(PoseStamped, '/true_target', 5)   # true target position
-        self.marker_pub = self.create_publisher(Marker, '/target_marker', 5)    # visualization for the observation and true target
+        self.obs_marker_pub = self.create_publisher(Marker, '/obs_marker', 5)        # visualization for the observation
+        self.gt_marker_pub = self.create_publisher(Marker, '/gt_marker', 5)          # visualization for the true target
+        
 
         # Create timer for publishing at constant rate
         self.timer = self.create_timer(1.0/publish_rate, self.publish_target)
@@ -175,7 +177,7 @@ class GenerateContinuousTargetNode(Node):
         gt_marker_msg.scale.x = self.radius
         gt_marker_msg.scale.y = self.radius
         gt_marker_msg.scale.z = self.radius
-        self.marker_pub.publish(gt_marker_msg)
+        self.gt_marker_pub.publish(gt_marker_msg)
 
         # update the simulated object state
         self.object.step()
@@ -205,7 +207,7 @@ class GenerateContinuousTargetNode(Node):
         marker_msg.scale.x = 2.0*self.radius
         marker_msg.scale.y = 2.0*self.radius
         marker_msg.scale.z = 2.0*self.radius
-        self.marker_pub.publish(marker_msg)
+        self.obs_marker_pub.publish(marker_msg)
 
 
 def main(args=None):

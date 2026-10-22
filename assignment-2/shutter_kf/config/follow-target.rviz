@@ -161,9 +161,21 @@ Visualization Manager:
       Visual Enabled: true
     - Class: rviz_default_plugins/Marker
       Enabled: true
-      Name: TargetMarker
+      Name: ObservationMarker
       Namespaces:
         target: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /obs_marker
+      Value: true
+    - Class: rviz_default_plugins/Marker
+      Enabled: true
+      Name: TrueTargetMarker
+      Namespaces:
         true_target: true
       Topic:
         Depth: 5
@@ -171,7 +183,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /target_marker
+        Value: /gt_marker
       Value: true
     - Class: rviz_default_plugins/MarkerArray
       Enabled: false
