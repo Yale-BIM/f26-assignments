@@ -107,7 +107,7 @@ class GenerateContinuousTargetNode(Node):
         # Define publishers
         self.vector_pub = self.create_publisher(Target, '/target', 5)           # observation
         self.vector_gt_pub = self.create_publisher(PoseStamped, '/true_target', 5)   # true target position
-        self.marker_pub = self.create_publisher(Marker, '/target_marker', 5)    # visualization for the observation
+        self.marker_pub = self.create_publisher(Marker, '/target_marker', 5)    # visualization for the observation and true target
 
         # Create timer for publishing at constant rate
         self.timer = self.create_timer(1.0/publish_rate, self.publish_target)
@@ -156,6 +156,26 @@ class GenerateContinuousTargetNode(Node):
         gt_pose_msg.pose.position.y = y
         gt_pose_msg.pose.position.z = z
         self.vector_gt_pub.publish(gt_pose_msg)
+
+        # publish a marker to visualize the true target in RViz. It is smaller than the observation marker
+        # so that it remains visible inside the observation when there is no noise or delay
+        gt_marker_msg = Marker()
+        gt_marker_msg.header = gt_pose_msg.header
+        gt_marker_msg.action = Marker.ADD
+        gt_marker_msg.color.a = 1.0
+        gt_marker_msg.color.r = 0.0
+        gt_marker_msg.color.g = 0.0
+        gt_marker_msg.color.b = 0.0
+        gt_marker_msg.lifetime.sec = 1
+        gt_marker_msg.lifetime.nanosec = 0
+        gt_marker_msg.id = 0
+        gt_marker_msg.ns = "true_target"
+        gt_marker_msg.type = Marker.SPHERE
+        gt_marker_msg.pose = gt_pose_msg.pose
+        gt_marker_msg.scale.x = self.radius
+        gt_marker_msg.scale.y = self.radius
+        gt_marker_msg.scale.z = self.radius
+        self.marker_pub.publish(gt_marker_msg)
 
         # update the simulated object state
         self.object.step()

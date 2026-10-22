@@ -629,12 +629,11 @@ as an input argument.
     well (recovering the true target's position as if there was
     no noise). 
 
-    Note that you can see what the `true` position of the target is 
-    when the `add_noise` flag is true by adding a PoseStamped visualization 
-    in RViz for the `/true_target` topic. Then, you should be able to see
-    the (noisy) observation as a red ball, the history of filtered positions 
+    Note that RViz also shows you the `true` position of the target, which is published
+    on the `/true_target` topic, as a small black ball. When the `add_noise` flag is true,
+    you should be able to see the (noisy) observation as a red ball, the history of filtered positions 
     as a green line (using the MarkerArray visualization mentioned before),
-    and the true target pose as a set of coordinate axes as follows:
+    and the true target as a black ball as follows:
 
     <img src="docs/shutter_noisy_filtering.png" width="480"/>
 

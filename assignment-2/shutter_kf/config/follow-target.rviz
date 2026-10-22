@@ -164,6 +164,7 @@ Visualization Manager:
       Name: TargetMarker
       Namespaces:
         target: true
+        true_target: true
       Topic:
         Depth: 5
         Durability Policy: Volatile

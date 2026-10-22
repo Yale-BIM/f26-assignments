@@ -17,7 +17,7 @@ Then, each observation on the `/target` topic is published 12 frames (0.4 second
 The `header.stamp` of the observation is still the time when it was captured. The true position of the target on
 `/true_target` is not delayed. Even if your filter estimates the observed position well, its output on `/filtered_target`
 lags behind the true target, and so does the robot. In RViz, the green track of filtered positions and the red ball
-(which shows the delayed observations) trail the `/true_target` axes, as shown below:
+(which shows the delayed observations) trail the black ball that shows the true target, as shown below:
 
 <img src="docs/shutter_delay.png" width="480"/>
 
@@ -28,7 +28,7 @@ script so that it forecasts the position of the target into the future to make u
 The forecast should estimate where the target is **now** (i.e., the position on `/true_target`, which your filter must
 not subscribe to). It should be output as a PoseStamped message through a new `/future_target` topic. Because the `follow_target.launch.py` script
 still runs your original `kalman_filter.py`, also rename the node in your new script (e.g., to `future_kalman_filter_node`) and publish
-its markers through a new `/future_markers` topic so that the two filters do not conflict.
+its markers through a new `/future_markers` topic so that the two filters do not conflict. You may also want to change the colors of the markers for this new filter so that you can distinguish them easily in RViz from the markers published by your original filter.
 
     To evaluate whether the robot is better tracking the target, first make your new script executable and rebuild your workspace:
 
