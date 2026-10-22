@@ -6,6 +6,7 @@ from rclpy.node import Node
 from rclpy.logging import get_logger
 import numpy as np
 import copy
+from collections import deque
 
 from shutter_lookat.msg import Target
 from geometry_msgs.msg import PoseStamped
@@ -64,7 +65,13 @@ class SimulatedObject(object):
 
 
 class GenerateContinuousTargetNode(Node):
-    """ROS 2 node for generating continuous target motion"""
+    """
+    ROS 2 node for generating continuous target motion.
+
+    Publishes the (possibly noisy) observation of the target on /target and its true position on /true_target.
+    With observation_delay_frames > 0, each observation is published that many frames after it was captured
+    (its header.stamp is still the capture time), as if perception were slow, while /true_target stays current.
+    """
 
     def __init__(self):
         super().__init__('generate_target')
@@ -77,6 +84,7 @@ class GenerateContinuousTargetNode(Node):
         self.declare_parameter("path_type", "horizontal")
         self.declare_parameter("add_noise", False)
         self.declare_parameter("fast", False)
+        self.declare_parameter("observation_delay_frames", 0)   # frames between capturing an observation and publishing it
 
         x_value = self.get_parameter("x_value").value
         self.radius = self.get_parameter("radius").value
@@ -85,6 +93,10 @@ class GenerateContinuousTargetNode(Node):
         self.add_noise = self.get_parameter("add_noise").value
         fast = self.get_parameter("fast").value
         arm_id = self.get_parameter("arm_id").value
+        self.observation_delay_frames = self.get_parameter("observation_delay_frames").value
+        if self.observation_delay_frames < 0:
+            self.get_logger().error(f"observation_delay_frames must be >= 0, but got {self.observation_delay_frames}. Using 0.")
+            self.observation_delay_frames = 0
 
         # Create the simulated object
         self.object = SimulatedObject(arm_id=arm_id)
@@ -101,6 +113,7 @@ class GenerateContinuousTargetNode(Node):
         self.timer = self.create_timer(1.0/publish_rate, self.publish_target)
         
         self.timestamp_buffer = None
+        self.pending_observations = deque()   # observations that have been captured but not published yet
 
     def publish_target(self):
         """Publish the target at a constant rate"""
@@ -130,28 +143,12 @@ class GenerateContinuousTargetNode(Node):
             self.get_logger().warn('Publish rate exceeds clock speed; check your clock publish rate')
             return
 
-        target_msg = Target()
-        target_msg.pose = pose_msg
-        target_msg.radius = self.radius
-        self.vector_pub.publish(target_msg)
         self.timestamp_buffer = Time.from_msg(pose_msg.header.stamp)
 
-        # publish a marker to visualize the target in RViz
-        marker_msg = Marker()
-        marker_msg.header = pose_msg.header
-        marker_msg.action = Marker.ADD
-        marker_msg.color.a = 0.5
-        marker_msg.color.r = 1.0
-        marker_msg.lifetime.sec = 1
-        marker_msg.lifetime.nanosec = 0
-        marker_msg.id = 0
-        marker_msg.ns = "target"
-        marker_msg.type = Marker.SPHERE
-        marker_msg.pose = pose_msg.pose
-        marker_msg.scale.x = 2.0*self.radius
-        marker_msg.scale.y = 2.0*self.radius
-        marker_msg.scale.z = 2.0*self.radius
-        self.marker_pub.publish(marker_msg)
+        # delay the observation by observation_delay_frames frames. It keeps its capture stamp.
+        self.pending_observations.append(pose_msg)
+        if len(self.pending_observations) > self.observation_delay_frames:
+            self.publish_observation(self.pending_observations.popleft())
 
         # publish true obj position
         gt_pose_msg = copy.deepcopy(pose_msg)
@@ -162,6 +159,33 @@ class GenerateContinuousTargetNode(Node):
 
         # update the simulated object state
         self.object.step()
+
+    def publish_observation(self, obs_msg):
+        """
+        Publish an observation of the target and its marker
+        :param obs_msg: PoseStamped with the observed position of the target, stamped with its capture time
+        """
+        target_msg = Target()
+        target_msg.pose = obs_msg
+        target_msg.radius = self.radius
+        self.vector_pub.publish(target_msg)
+
+        # publish a marker to visualize the observation in RViz
+        marker_msg = Marker()
+        marker_msg.header = obs_msg.header
+        marker_msg.action = Marker.ADD
+        marker_msg.color.a = 0.5
+        marker_msg.color.r = 1.0
+        marker_msg.lifetime.sec = 1
+        marker_msg.lifetime.nanosec = 0
+        marker_msg.id = 0
+        marker_msg.ns = "target"
+        marker_msg.type = Marker.SPHERE
+        marker_msg.pose = obs_msg.pose
+        marker_msg.scale.x = 2.0*self.radius
+        marker_msg.scale.y = 2.0*self.radius
+        marker_msg.scale.z = 2.0*self.radius
+        self.marker_pub.publish(marker_msg)
 
 
 def main(args=None):

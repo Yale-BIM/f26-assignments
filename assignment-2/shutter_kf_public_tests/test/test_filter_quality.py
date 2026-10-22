@@ -118,6 +118,7 @@ class TestFilterQuality(unittest.TestCase):
         # Wait for the filter's first output. The simulation takes ~20 seconds to come up and start
         # publishing /clock, and the target is only generated once the clock is running.
         self.node.create_subscription(PoseStamped, self.filtered_topic, self._filtered_callback, 5)
+        print(f"[{NAME}] Waiting up to 90 s for {self.filtered_topic} (the simulation takes ~20 s to start)...", flush=True)
         timeout_t = time.time() + 90.0
         while rclpy.ok() and not self.got_filtered_msg and time.time() < timeout_t:
             rclpy.spin_once(self.node, timeout_sec=0.1)
@@ -133,6 +134,7 @@ class TestFilterQuality(unittest.TestCase):
         ts = message_filters.ApproximateTimeSynchronizer(subs, 10, 0.25)
         ts.registerCallback(self._callback)
 
+        print(f"[{NAME}] Got the first output of the filter. Comparing it with the true target for 30 s...", flush=True)
         timeout_t = time.time() + 30  # 30 seconds in the future
 
         # collect synchronized messages
@@ -142,7 +144,7 @@ class TestFilterQuality(unittest.TestCase):
         # did we succeed in getting messages?
         self.assertGreaterEqual(len(self.msg_list), 10,
             f"Got less than 10 synchronized messages in 30 secs (num. messages={len(self.msg_list)}).")
-        print(f"Got {len(self.msg_list)} synchronized messages.")
+        print(f"[{NAME}] Got {len(self.msg_list)} synchronized messages.", flush=True)
 
         # compute error
         err = []
@@ -157,8 +159,8 @@ class TestFilterQuality(unittest.TestCase):
 
         avg_err = np.mean(err)
         std_err = np.std(err)
-        print(f"Avg err={avg_err}")
-        print(f"Std err={std_err}")
+        print(f"[{NAME}] Avg err={avg_err}", flush=True)
+        print(f"[{NAME}] Std err={std_err}", flush=True)
 
         self.assertLessEqual(avg_err, 0.04,
             f"The average error {avg_err} (+- {std_err}) was greater than 0.04.")

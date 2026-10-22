@@ -45,6 +45,11 @@ if(BUILD_TESTING)
   # default of add_launch_test is not enough. The number below is a ceiling for a hung test, not
   # an expected runtime.
   add_ros_isolated_launch_test(test/test_filter_quality.py TIMEOUT 240)
+
+  # test_future_filter_quality.py (Part IV, CPSC-5590) brings up the same simulation with delayed
+  # observations plus future_kalman_filter.py, and compares the forecast on /future_target with the
+  # true target and with simple baselines for 30 seconds.
+  add_ros_isolated_launch_test(test/test_future_filter_quality.py TIMEOUT 240)
 endif()
 
 ament_package()

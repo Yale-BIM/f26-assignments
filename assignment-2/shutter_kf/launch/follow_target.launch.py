@@ -19,6 +19,7 @@ Usage:
     ros2 launch shutter_kf follow_target.launch.py
     ros2 launch shutter_kf follow_target.launch.py add_noise:=true path_type:=circular
     ros2 launch shutter_kf follow_target.launch.py follow_target_topic:=/true_target
+    ros2 launch shutter_kf follow_target.launch.py add_noise:=true path_type:=circular observation_delay_frames:=12
 """
 
 from launch import LaunchDescription
@@ -54,6 +55,12 @@ def generate_launch_description():
         'fast_target',
         default_value='false',
         description='Make target move faster'
+    )
+
+    observation_delay_frames_arg = DeclareLaunchArgument(
+        'observation_delay_frames',
+        default_value='0',
+        description='Number of frames by which the target observations on /target are delayed (/true_target is not delayed)'
     )
 
     follow_target_topic_arg = DeclareLaunchArgument(
@@ -141,7 +148,8 @@ def generate_launch_description():
             'publish_rate': LaunchConfiguration('publish_rate'),
             'path_type': LaunchConfiguration('path_type'),
             'add_noise': LaunchConfiguration('add_noise'),
-            'fast': LaunchConfiguration('fast_target')
+            'fast': LaunchConfiguration('fast_target'),
+            'observation_delay_frames': LaunchConfiguration('observation_delay_frames')
         }]
     )
 
@@ -174,6 +182,7 @@ def generate_launch_description():
         path_type_arg,
         add_noise_arg,
         fast_target_arg,
+        observation_delay_frames_arg,
         follow_target_topic_arg,
         headless_arg,
         face_arg,
