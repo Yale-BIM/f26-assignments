@@ -42,6 +42,12 @@ using hardware acceleration (e.g., a dedicated GPU).
 > Whether or not you use the cloud to train your neural networks, the deliverables are the same.
 You should submit code in your private Github repository. You should also submit a report to Gradescope and provide model parameter files through Google Drive.
 
+##### Training on Google Cloud
+You can use [Google Cloud](https://cloud.google.com) to train machine learning models for this assignment. This is not free, but you can customize virtual machines with as many resources as you need. Use your credits judiciously. 
+
+A `quick tutorial` on using Google Cloud for this assignment is provided in the
+[Train_Google_Cloud_Engine.md](Train_Google_Cloud_Engine.md) file.
+
 #### Deliverables
 
 - **Report:** You are expected to answer questions in Gradescope at the end of each part of the assignment. This online report should also have the specific commit SHA of the version of the code that you submit for the assignment. 
