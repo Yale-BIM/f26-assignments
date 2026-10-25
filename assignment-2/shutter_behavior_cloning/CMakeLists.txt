@@ -73,6 +73,14 @@ if(BUILD_TESTING)
   # The test brings up the MuJoCo simulation and MoveIt Servo (~30 seconds) and then runs 25 trials of
   # a few seconds each. The number below is a ceiling for a hung test, not an expected runtime.
   add_ros_isolated_launch_test(test/test_policy.py TIMEOUT 400)
+
+  # Checks that the model files set in train_utils.py can be downloaded from Google Drive. It needs
+  # gdown and PyTorch from your Python virtual environment, so the PYTHONPATH is set as above.
+  find_package(ament_cmake_pytest REQUIRED)
+  ament_add_pytest_test(test_download_model test/test_download_model.py
+    ENV "PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/scripts:$ENV{PYTHONPATH}:$ENV{VIRTUAL_ENV}/lib/python3.12/site-packages"
+    TIMEOUT 120
+  )
 endif()
 
 ament_package()

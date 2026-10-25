@@ -481,12 +481,23 @@ be placed within the `assignment-2/shutter_behavior_cloning/scripts` directory.
             json.dump({'mean': mean.tolist(), 'std': std.tolist()}, fid)
         ```
     
-    Once you have trained your model, upload your saved files to Google Drive and make them accessible to "Anyone with 
-    the link". Then, add these links to the top of the [assignment-2/shutter_behavior_cloning/scripts/train_utils.py](shutter_behavior_cloning/scripts/train_utils.py) file
-    and test that they can be automatically downloaded using the `download_model_files()` function inside that same 
-    Python file. If Google gives you a link like 
+    Once you have trained your model, upload your model and normalization parameters (if any) to Google Drive and make them accessible to "Anyone with 
+    the link". Then, add these links to the top of the [assignment-2/shutter_behavior_cloning/scripts/train_utils.py](shutter_behavior_cloning/scripts/train_utils.py) file. If Google gives you a link like 
     `https://drive.google.com/file/d/<file_id>/view?usp=sharing`, then you should add 
-    `https://drive.google.com/uc?id=<file_id>` to the script for the evaluation with Gradescope to run successfully.
+    `https://drive.google.com/uc?id=<file_id>` to the script for the evaluation with Gradescope to run successfully. If you have no normalization parameters, then set `NORM_PARAMS_URL=None`. Finally, 
+    test that your model and normalization parameters (if any) can be automatically downloaded with the 
+    [test_download_model.py](shutter_behavior_cloning/test/test_download_model.py) test. For this, activate your Python virtual environment first, 
+    so that the test can import gdown and PyTorch:
+    ```bash
+    $ source <path-to-your-ros2-workspace>/.venv/bin/activate
+    $ cd <path-to-your-ros2-workspace>
+    $ colcon test --packages-select shutter_behavior_cloning --event-handlers console_direct+ --ctest-args -R test_download_model
+    ```
+    > Note: If the test fails to import gdown or torch even though your virtual environment is active, rebuild the package with `colcon build --symlink-install --packages-select shutter_behavior_cloning --cmake-force-configure`. This is necessary because the test reads the location of your virtual environment when the package is configured.
+    
+    The test downloads your files with the `download_model_files()` function in `train_utils.py`, as the autograder in Gradescope does, 
+    and checks that your model can be loaded with `torch.load(path, weights_only=True)` and that your normalization parameters (if any) 
+    can be loaded with `json.load()`. 
     
 - **II-2.** Complete the `assignment-2/shutter_behavior_cloning/scripts/run_policy.py` script so that it loads up 
 your model (and any relevant normalization parameters) and computes new poses for Shutter to follow the target. More specifically, update the `__init__` function in the 

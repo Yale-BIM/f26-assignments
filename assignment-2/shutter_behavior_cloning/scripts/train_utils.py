@@ -64,6 +64,21 @@ def load_data(input_file):
     return features, targets
 
 
+def _download(url, output, quiet):
+    """
+    Download a file with gdown
+    :param url: URL of the file
+    :param output: output path for the file
+    :param quiet: print info?
+    :return: output path, or None if there was an error (recent gdown versions raise instead of returning None)
+    """
+    try:
+        return gdown.download(url, output, quiet=quiet)
+    except Exception as e:
+        print("gdown failed to download {}: {}".format(url, e))
+        return None
+
+
 def download_model_files(output_path=".", quiet=False, model_name="torch_model", norm_params_name="norm_params"):
     """
     Helper function to download a trained PyTorch model from Google Drive
@@ -77,13 +92,13 @@ def download_model_files(output_path=".", quiet=False, model_name="torch_model",
         print("MODEL_URL is not set in train_utils.py. Failed to download the model")
         return None, None
 
-    out1 = gdown.download(MODEL_URL, os.path.join(output_path, model_name), quiet=quiet)
+    out1 = _download(MODEL_URL, os.path.join(output_path, model_name), quiet)
     if out1 is None:
         print("Failed to download {} from Google Drive. Check that the path is correct and the file can be downloaded "
               "by anybody without having to log into Google".format(MODEL_URL))
 
     if NORM_PARAMS_URL is not None:
-        out2 = gdown.download(NORM_PARAMS_URL, os.path.join(output_path, norm_params_name), quiet=quiet)
+        out2 = _download(NORM_PARAMS_URL, os.path.join(output_path, norm_params_name), quiet)
         if out2 is None:
             print("Failed to download {} from Google Drive. Check that the path is correct and the file can "
                   "be downloaded by anybody without having to log into Google".format(NORM_PARAMS_URL))
