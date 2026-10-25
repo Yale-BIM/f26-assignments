@@ -52,7 +52,7 @@ A `quick tutorial` on using Google Cloud for this assignment is provided in the
 
 - **Report:** You are expected to answer questions in Gradescope at the end of each part of the assignment. This online report should also have the specific commit SHA of the version of the code that you submit for the assignment. 
 
-- **Model weights and input normalization parameters:** You should upload trained models and parameters to Google Drive and share them with anybody who has access to the links.
+- **Model weights and input normalization parameters:** For Part II, you should upload your trained policy model (and its normalization parameters, if any) to Google Drive, share them with anybody who has access to the links, and add the links to `train_utils.py` as explained in task II-1. You do not need to upload the models that you train in Part I.
 
 - **Code:** Finally, you are expected to push code for this assignment to your 
 [Github](http://www.github.com) repository and submit it to Gradescope.
@@ -460,10 +460,10 @@ be placed within the `assignment-2/shutter_behavior_cloning/scripts` directory.
        $ python learn_policy.py <path_to_training_data>
        ```
     
-        > Tip: Run the new script within the same virtual environment as for Part I of this assignment, where you have already installed Pytorch.
+        > Tip: Run the new script within the same virtual environment as for Part I of this assignment, where you have already installed PyTorch.
        
     2. Load up the data and use it to train a neural network model that predicts the new joint positions for the robot 
-    (joint_1, and joint_3). For your convenience, this assignment provides you the `load_data()` function 
+    (joint_1 and joint_3). For your convenience, this assignment provides you the `load_data()` function 
     within the [assignment-2/shutter_behavior_cloning/scripts/train_utils.py](shutter_behavior_cloning/scripts/train_utils.py) script to load up the `state_action.txt`
     data.
     
@@ -491,13 +491,30 @@ be placed within the `assignment-2/shutter_behavior_cloning/scripts` directory.
     ```bash
     $ source <path-to-your-ros2-workspace>/.venv/bin/activate
     $ cd <path-to-your-ros2-workspace>
-    $ colcon test --packages-select shutter_behavior_cloning --event-handlers console_direct+ --ctest-args -R test_download_model
+    $ PYTEST_ADDOPTS="-v" colcon test --packages-select shutter_behavior_cloning --event-handlers console_direct+ --ctest-args -R test_download_model
     ```
-    > Note: If the test fails to import gdown or torch even though your virtual environment is active, rebuild the package with `colcon build --symlink-install --packages-select shutter_behavior_cloning --cmake-force-configure`. This is necessary because the test reads the location of your virtual environment when the package is configured.
-    
+
     The test downloads your files with the `download_model_files()` function in `train_utils.py`, as the autograder in Gradescope does, 
     and checks that your model can be loaded with `torch.load(path, weights_only=True)` and that your normalization parameters (if any) 
-    can be loaded with `json.load()`. 
+    can be loaded with `json.load()`. The `PYTEST_ADDOPTS="-v"` option at the beginning of the `colcon test` command makes pytest list each check in the test and whether it passed. If all goes well, the test should output text in the terminal that looks like this:
+
+    ```bash
+    .../assignment-2/shutter_behavior_cloning/test/test_download_model.py::test_urls_are_set PASSED [ 33%]
+    .../assignment-2/shutter_behavior_cloning/test/test_download_model.py::test_download_model PASSED [ 66%]
+    .../assignment-2/shutter_behavior_cloning/test/test_download_model.py::test_download_norm_params PASSED [100%]
+
+    (...)
+
+    The following tests passed:
+        test_download_model
+
+    100% tests passed, 0 tests failed out of 1
+    ```
+
+    If you set `NORM_PARAMS_URL = None` in the [train_utils.py](shutter_behavior_cloning/scripts/train_utils.py) file, the last check `test_download_norm_params` should show SKIPPED instead of PASSED.
+    
+    If the test fails to import gdown or torch even though your virtual environment is active, rebuild the package with `colcon build --symlink-install --packages-select shutter_behavior_cloning --cmake-force-configure`. This is necessary because the test reads the location of your virtual environment when the package is configured.
+    
     
 - **II-2.** Complete the `assignment-2/shutter_behavior_cloning/scripts/run_policy.py` script so that it loads up 
 your model (and any relevant normalization parameters) and computes new poses for Shutter to follow the target. More specifically, update the `__init__` function in the 
@@ -531,7 +548,7 @@ script to load up your model from disk using the model file path and normalizati
     your virtual environment when the package is configured.
   
     **NOTE 2:** When your code is evaluated in gradescope, the autograder code will download your model files from Google Drive automatically (using the function `download_model_files()` in [train_utils.py](shutter_behavior_cloning/scripts/train_utils.py))
-    and run the same [test_policy.py](shutter_behavior_cloning/test/test_policy.py) script to evaluate your model on the 25 trials. The number of trials for which you get an acceptable output (as defined in the test) will set 50% of your grade for this part of the assignment. The other 50% of the grade corresponds to imitation learning performance on a new set of trials, where accetable behavior is defined as for the public test: the robot, when controlled by your policy, needs to approximate the expert's behavior for both joints with an error of less than 0.0261799 radians (1.5 degrees).
+    and run the same [test_policy.py](shutter_behavior_cloning/test/test_policy.py) script to evaluate your model on the 25 trials. The number of trials for which you get an acceptable output (as defined in the test) will set 50% of your grade for this part of the assignment. The other 50% of the grade corresponds to imitation learning performance on a new set of trials, where acceptable behavior is defined as for the public test: the robot, when controlled by your policy, needs to approximate the expert's behavior for both joints with an error of less than 0.0261799 radians (1.5 degrees).
     
     **NOTE 3:** The student(s) with the minimum average error on the new set of (unseen) trials will receive 1 extra point in their final course grade. Here, the error is computed as `avg(diff_j1 + diff_j3)`, where `diff_j1` and `diff_j3` correspond to the absolute angular error between your policy's joint commands and the expert's commands on the first and third robot joint. When ranking solutions, we will compare the error up to 3 point precision, and evaluate projects by class: students in 4590 will only compete against other students in 4590 for the extra point; and students in 5590 will compete against other students taking the graduate course only. Thus, at least 2 students are expected to get the extra point for this part of the assignment (one enrolled in 4590 and one in 5590).
     
