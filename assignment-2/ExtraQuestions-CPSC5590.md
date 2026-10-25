@@ -90,7 +90,7 @@ spread across all the variables (ignoring the correlations between them, which a
     - a) the current state, which is the belief of your filter right after it incorporates the latest observation (without forecasting), and
     - b) the forecasted state that your node publishes on `/future_target`.
 
-    Specifically, each time your filter incorporates a new observation, print one line with the current time of your node, the trace for (a), and the trace for (b). 
+    Specifically, on each iteration of the `main_loop()` function of your `future_kalman_filter.py` script in which your filter performs a measurement update, print one line with the current time of your node, the trace for (a), and the trace for (b). If more than one observation arrived since the previous iteration, compute (a) after the last measurement update of that iteration, and (b) from the forecast that your node publishes in that iteration.
     
     Then, run your node as in IV-1 with the circular trajectory, but with `observation_delay_frames:=24`. Wait at least 5 seconds (according to your node's clock) after your filter receives its first observation, and then report at least 3 of the printed lines with traces for (a) and (b) in your  report.
 
