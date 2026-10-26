@@ -24,9 +24,7 @@ script so that it forecasts the position of the target into the future to make u
 The forecast should estimate where the true target is **now** (i.e., the position on `/true_target`, which your filter must
 not subscribe to). 
 
-Your new filter should output the forecasted position as a PoseStamped message through a new `/future_target` topic. Because the `follow_target.launch.py` script
-still runs your original `kalman_filter.py`, also rename the node in your new script (e.g., to `future_kalman_filter_node`) and publish
-its markers through a new `/future_markers` topic so that the two filters do not conflict. You may also want to change the colors of the visualization markers for your new filter so that you can distinguish them easily in RViz from the markers published by your original filter from Part III.
+    Your new filter should output the forecasted position as a PoseStamped message through a new `/future_target` topic. Because the `follow_target.launch.py` script still runs your original `kalman_filter.py`, also rename the node in your new script (e.g., to `future_kalman_filter_node`) and publish its markers through a new `/future_markers` topic so that the two filters do not conflict. You may also want to change the colors of the visualization markers for your new filter so that you can distinguish them easily in RViz from the markers published by your original filter from Part III.
 
     To evaluate whether the robot is better tracking the target, first make your new script executable and rebuild your workspace:
 
