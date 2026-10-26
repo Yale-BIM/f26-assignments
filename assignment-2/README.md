@@ -61,18 +61,18 @@ A `quick tutorial` on using Google Cloud for this assignment is provided in the
 
 You assignment will be evaluated based on the content of your report and your code.
 
-- Report (52 pts for CPSC-4590 / 84 pts for CPSC-5590)
+- Report (52 pts for CPSC-4590 / 87 pts for CPSC-5590)
     * Part I (32 pts): I-1 (8 pts) + I-3 (8 pts) + I-4 (10 pts) + I-5 (6 pts)
     * Part III (20 pts): III-1 (5 pts) + III-2 (5 pts) + III-3 (5 pts) + III-4 (5 pts)
     * Part IV (12 pts for CPSC-5590 only): IV-2 (4 pts) + IV-3 (4 pts) + IV-4 (4 pts)
-    * Part V (20 pts for CPSC-5590 only): V-1 (7 pts) + V-2 (5 pts) + V-3 (8 pts)
-- Code (128 pts for CPSC-4590 / 136 pts for CPSC-5590)
+    * Part V (23 pts for CPSC-5590 only): V-1 (7 pts) + V-2 (8 pts) + V-3 (8 pts)
+- Code (128 pts for CPSC-4590 / 138 pts for CPSC-5590)
     * Part I (20 pts): I-1 (4 pts) + I-2 (6 pts) + I-3 (10 pts)
     * Part II (54 pts): II-1 (34 pts) + II-2 (20 pts)
     * Part III (54 pts): III-5 (8 pts) + III-6 (8 pts) + III-7 (6 pts) + III-8 (6 pts) + III-9 (4 pts) + III-10 (6 pts) + III-11 (16 pts) 
-    * Part IV (8 pts for CPSC-5590 only): IV-1 (8 pts)
+    * Part IV (10 pts for CPSC-5590 only): IV-1 (10 pts)
 
-Students taking CPSC-4590 will be evaluated over 180 pts. Those taking CPSC-5590, will be evaluated over 220 pts.
+Students taking CPSC-4590 will be evaluated over 180 pts. Those taking CPSC-5590, will be evaluated over 225 pts.
 
 **Note on Part II of the assignment:** Part II provides extra credit for the students that obtain best performance in this part of the assignment. The extra credit (1 pts) will be counted for the final course grade 
 (beyond whatever points students get for this assignment). 

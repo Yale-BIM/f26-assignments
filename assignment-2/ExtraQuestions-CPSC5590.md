@@ -110,4 +110,4 @@ In this part of the assignment, you should think about how to implement a partic
 
 - **V-2.** If you were to implement a particle filter for tracking your object in Part IV, can you use the same transition (motion) model as in your Kalman Filter implementation? Do you need to modify it in any way? Explain in your report.
 
-- **V-3.** If you were to implement a particle filter for tracking your object in Part IV, how would you compute the weights for the particles?
+- **V-3.** If you were to implement a particle filter for tracking your object in Part IV, how would you compute the weights for the particles? Explain in your report.
