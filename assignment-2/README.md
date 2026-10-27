@@ -68,7 +68,7 @@ You assignment will be evaluated based on the content of your report and your co
     * Part V (24 pts for CPSC-5590 only): V-1 (8 pts) + V-2 (8 pts) + V-3 (8 pts)
 - Code (126 pts for CPSC-4590 / 135 pts for CPSC-5590)
     * Part I (18 pts): I-1 (3 pts) + I-2 (6 pts) + I-3 (9 pts)
-    * Part II (54 pts): II-1 (34 pts) + II-2 (20 pts)
+    * Part II (54 pts): II-1 (14 pts) + II-2 (40 pts)
     * Part III (54 pts): III-5 (8 pts) + III-6 (8 pts) + III-7 (6 pts) + III-8 (6 pts) + III-9 (4 pts) + III-10 (6 pts) + III-11 (16 pts) 
     * Part IV (9 pts for CPSC-5590 only): IV-1 (9 pts)
 
