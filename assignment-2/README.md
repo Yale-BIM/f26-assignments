@@ -12,7 +12,7 @@ This is the second assignment for Yale's CPSC-4590/5590 Building Interactive Mac
     * [Evaluation](#evaluation)
 * [Setup](#setup)
 * [Part I. Approximating a Non-Linear Function](#part-i-approximating-a-non-linear-function)
-* [Part II. Imitation Learning (2 extra points)](#part-ii-imitation-learning-2-potential-extra-points)
+* [Part II. Imitation Learning (1 extra point)](#part-ii-imitation-learning-2-potential-extra-points)
 * [Part III. Real-Time Filtering](#part-iii-real-time-filtering)
 * [Parts IV and V](#parts-iv-and-v)
 
