@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
-# Creates a Google Cloud VM with an NVIDIA L4 GPU for Assignment 2.
+# Creates a Google Cloud VM with an NVIDIA GPU (L4 or T4) for Assignment 2.
 #
-# Usage: ./create_vm.sh PROJECT_ID
+# Usage: ./create_vm.sh PROJECT_ID [l4|t4]
+#
+# The second argument picks the GPU type (default: l4). See the "GPU options"
+# section below for the machine each one uses.
 #
 # What it does:
 #   1. Exits if the VM already exists. Otherwise, deletes any network left over
 #      from a previous run (see teardown in common.sh).
 #   2. Creates a private network for the VM, plus a firewall rule that allows SSH.
-#   3. Goes region by region looking for a zone that has an L4 GPU available, and
+#   3. Goes region by region looking for a zone that has the GPU available, and
 #      creates the VM in the first one that works. GPUs are in high demand, so
 #      some zones will say they have none available; the script just moves on.
 #   4. Waits while the VM installs the NVIDIA driver and the Python dependencies
@@ -22,20 +25,56 @@
 #   - gcloud: Google Cloud's command-line tool. "gcloud compute ..." commands
 #     manage VMs and networking (Compute Engine).
 set -u
-if [ $# -ne 1 ]; then
-  echo "Usage: $0 PROJECT_ID"
+if [ $# -lt 1 ] || [ $# -gt 2 ]; then
+  echo "Usage: $0 PROJECT_ID [l4|t4|cpu]"
   exit 1
 fi
 PROJECT=$1
+GPU_CHOICE=${2:-l4}
 # Loads NET (network name), VM (VM name), log, and teardown
 source "$(dirname "$0")/common.sh"
-# Machine type = how many CPUs and how much memory the VM gets. g2-standard-4 has
-# 4 virtual CPUs, 16 GB of memory, and always comes with one NVIDIA L4 GPU 
-# (with 24 GB of GPU memory).
-MACHINE=g2-standard-4
-GPU=nvidia-l4
-# Regions to try, in order
-REGIONS="us-central1 us-east1 us-east4 us-west1 us-west4 us-south1"
+
+# --- GPU options ---
+# Machine type = how many CPUs and how much memory the VM gets.
+#   MACHINE      the machine type.
+#   GPU          the GPU's name in Google Cloud. Empty for a VM without a GPU.
+#   ACCELERATOR  extra option for "gcloud compute instances create" that attaches
+#                the GPU. Empty when the machine type already comes with one,
+#                or when there is no GPU.
+#   REGIONS      regions to try, in order. Regions without the GPU are skipped,
+#                so it's fine to list extra ones.
+# To try another GPU, add a case here.
+case "$GPU_CHOICE" in
+  l4)
+    # g2-standard-4 has 4 virtual CPUs, 16 GB of memory, and always comes with
+    # one NVIDIA L4 GPU (with 24 GB of GPU memory).
+    MACHINE=g2-standard-4
+    GPU=nvidia-l4
+    ACCELERATOR=""
+    REGIONS="us-central1 us-east1 us-east4 us-west1 us-west4 us-south1"
+    ;;
+  t4)
+    # n1-standard-4 has 4 virtual CPUs and 15 GB of memory. N1 machines don't
+    # come with a GPU, so we attach one NVIDIA T4 GPU (with 16 GB of GPU memory).
+    MACHINE=n1-standard-4
+    GPU=nvidia-tesla-t4
+    ACCELERATOR="--accelerator=type=$GPU,count=1"
+    REGIONS="us-central1 us-east1 us-east4 us-west1 us-west2 us-west3 us-west4"
+    ;;
+  cpu)
+    # n1-standard-4 (4 virtual CPUs, 15 GB of memory) with no GPU. Training is
+    # much slower, but these machines are almost always available.
+    MACHINE=n1-standard-4
+    GPU=""
+    ACCELERATOR=""
+    REGIONS="us-central1 us-east1 us-east4 us-west1 us-west2 us-west3 us-west4 us-south1"
+    ;;
+  *)
+    echo "Unknown GPU type '$GPU_CHOICE'. Use l4, t4, or cpu."
+    exit 1
+    ;;
+esac
+log "Using ${GPU:-no GPU} on $MACHINE."
 
 # Names are prefixed with $NET so they can't collide with other resources in
 # the project (firewall names are project-wide; subnet/router names per region).
@@ -98,9 +137,15 @@ gcloud compute firewall-rules create $FIREWALL --network=$NET \
 # The awk command then keeps lines whose first column is $GPU and prints the zone.
 # (gcloud's own --filter option on accelerator names turned out to be unreliable,
 # so we filter in the shell instead.)
-log "Looking up zones that offer $GPU GPUs..."
-GPU_ZONES=$(gcloud compute accelerator-types list --format="value(name,zone.basename())" \
-  | awk -v gpu="$GPU" '$1 == gpu {print $2}')
+# Without a GPU, any zone will do, so we list all zones instead.
+if [ -n "$GPU" ]; then
+  log "Looking up zones that offer $GPU GPUs..."
+  ZONES=$(gcloud compute accelerator-types list --format="value(name,zone.basename())" \
+    | awk -v gpu="$GPU" '$1 == gpu {print $2}')
+else
+  log "Looking up zones..."
+  ZONES=$(gcloud compute zones list --format="value(name)")
+fi
 
 # Wait for setup_vm.sh, which runs on the VM, to finish. setup_vm.sh prints lines
 # starting with "SETUP:" as it goes; we read them from the VM's serial console.
@@ -154,12 +199,12 @@ for region in $REGIONS; do
   range=192.168.$i.0/24
   i=$((i+1))
 
-  zones=$(echo "$GPU_ZONES" | grep "^$region-")
+  zones=$(echo "$ZONES" | grep "^$region-")
   if [ -z "$zones" ]; then
-    log "No $GPU zones in $region; moving on."
+    log "No ${GPU:-usable} zones in $region; moving on."
     continue
   fi
-  log "$GPU zones in $region: $(echo $zones)"
+  log "${GPU:-Usable} zones in $region: $(echo $zones)"
 
   # Create a subnet: the part of our network that exists in this region. A VM
   # must be placed in a subnet, and gets its private IP address from it.
@@ -206,10 +251,12 @@ for region in $REGIONS; do
     || { log "NAT creation failed in $region; skipping region."; continue; }
 
   for z in $zones; do
-    # Create the VM ("instance"). This fails if the zone has no free L4 GPUs
-    # right now, in which case we try the next zone.
+    # Create the VM ("instance"). This fails if the zone has no free GPUs (or,
+    # rarely, machines) right now, in which case we try the next zone.
     #   --zone=$z                     the zone to create it in.
     #   --machine-type=$MACHINE       CPUs, memory, and GPU (see MACHINE above).
+    #   $ACCELERATOR                  attaches the GPU, if the machine type
+    #                                 doesn't come with one (see GPU options).
     #   --subnet=$SUBNET              the subnet to put it in.
     #   --no-address                  don't give it a public IP address, so it
     #                                 can't be reached directly from the internet.
@@ -236,7 +283,7 @@ for region in $REGIONS; do
     #   --boot-disk-size=50GB         size of the VM's disk.
     #   --quiet                       don't ask for confirmation.
     log "Trying to create $VM in $z..."
-    gcloud compute instances create $VM --zone=$z --machine-type=$MACHINE \
+    gcloud compute instances create $VM --zone=$z --machine-type=$MACHINE $ACCELERATOR \
       --subnet=$SUBNET --no-address --maintenance-policy=TERMINATE \
       --image-family=ubuntu-2404-lts-amd64 --image-project=ubuntu-os-cloud \
       --metadata-from-file=startup-script="$(dirname "$0")/setup_vm.sh",python-deps="$(dirname "$0")/../install_python_deps.sh" \

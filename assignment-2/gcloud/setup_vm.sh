@@ -19,6 +19,23 @@
 MARKER=/var/lib/vm-setup-done
 VENV=/opt/venv
 
+# Check whether the VM has an NVIDIA GPU (create_vm.sh's "cpu" option makes one
+# without). Every PCI device lists its maker's ID in /sys; 0x10de is NVIDIA's.
+if grep -qs 0x10de /sys/bus/pci/devices/*/vendor; then
+  HAS_GPU=1
+else
+  HAS_GPU=0
+fi
+
+if [ -f $MARKER ] && [ $HAS_GPU = 0 ]; then
+  if $VENV/bin/python -c "import torch" 2>/dev/null; then
+    echo "SETUP: ready (no GPU; PyTorch will run on the CPU)"
+    exit 0
+  fi
+  echo "SETUP: failed: packages installed but PyTorch cannot be imported."
+  exit 1
+fi
+
 if [ -f $MARKER ]; then
   GPU=$($VENV/bin/python -c "import torch; assert torch.cuda.is_available(); print(torch.cuda.get_device_name(0))" 2>/dev/null)
   if [ -n "$GPU" ]; then
@@ -47,10 +64,15 @@ APT="apt-get -y -o DPkg::Lock::Timeout=600"
 dpkg --configure -a
 
 # ubuntu-drivers is Ubuntu's tool for picking and installing the right driver
-# for the hardware it finds (here, the L4 GPU).
-echo "SETUP: installing NVIDIA driver..."
-$APT update && $APT install ubuntu-drivers-common && ubuntu-drivers install \
-  || fail "installing the NVIDIA driver"
+# for the hardware it finds (here, the L4 or T4 GPU).
+$APT update || fail "updating the package list"
+if [ $HAS_GPU = 1 ]; then
+  echo "SETUP: installing NVIDIA driver..."
+  $APT install ubuntu-drivers-common && ubuntu-drivers install \
+    || fail "installing the NVIDIA driver"
+else
+  echo "SETUP: no NVIDIA GPU found; skipping the driver."
+fi
 
 # python3-numpy and python3-matplotlib are the same versions install_python_deps.sh
 # pins (Ubuntu 24.04's, which ROS 2 Jazzy also uses). The venv sees them through

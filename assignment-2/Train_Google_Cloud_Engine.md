@@ -116,17 +116,21 @@ $ gcloud compute instances create my-gpu-vm --zone=us-east4-a --machine-type=g2-
       --boot-disk-size=50GB --quiet
 ```
 
-Because it is hard to predict which zone will have such machine available, we created scripts in the [gcloud](gcloud) folder to help with this process:
+Because it is hard to predict which zone will have such machine available, we created example scripts in the [gcloud](gcloud) folder to help with this process:
 
-- [create_vm.sh](gcloud/create_vm.sh): Creates a Google Cloud VM with an Nvidia L4 GPU for Assignment 2 that is named `my-gpu-vm`. It searches through different zones to try to create the VM, and in the process, creates the network as well. Notably, this script pre-installs the NVidia drivers and the python requirements in [install_python_deps.sh](install_python_deps.sh) so that when you log into the machine, you can start working on training and testing neural networks.
+- [create_vm.sh](gcloud/create_vm.sh): Creates a Google Cloud VM with an Nvidia L4 GPU (default), an Nvidia T4 GPU, or no GPU for Assignment 2 that is named `my-gpu-vm`. It searches through different zones to try to create the VM, and in the process, creates the network as well. Notably, this script pre-installs the NVidia drivers and the python requirements in [install_python_deps.sh](install_python_deps.sh) so that when you log into the machine, you can start working on training and testing neural networks.
 - [stop_vm.sh](gcloud/stop_vm.sh): Stops a VM with name `my-gpu-vm`. If you provide the `--delete` argument to the script, it also deletes all the resources needed to operate that VM (the network, hard drive, etc.) and the VM itself.
 
 Thus, to get started with creating a virtual machine, you can simply run:
 
 ```bash
 $ cd gcloud
-$ ./create_vm.sh <PROJECT-NAME>
+$ ./create_vm.sh <PROJECT-NAME>        # L4 GPU on a g2-standard-4 machine
+$ ./create_vm.sh <PROJECT-NAME> t4     # T4 GPU on an n1-standard-4 machine
+$ ./create_vm.sh <PROJECT-NAME> cpu    # no GPU, n1-standard-4 machine
 ```
+
+If the script can't find an available L4 GPU in any zone, try again with `t4` (or vice versa). As a last resort, `cpu` creates a VM without a GPU. It is almost always available, but training runs much more slowly on it.
 
 To connect to your VM via SSH once it's running:
 
